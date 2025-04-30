@@ -1,0 +1,42 @@
+graph TD
+    Client[HTTP Client] -->|1. Sends HTTP Request| Controller
+
+    subgraph "Controller Layer"
+        Controller[Controller] -->|2. Request Validation| RequestValidation[Valid Annotation]
+        RequestValidation -.->|Validation Error| ExceptionHandler[GlobalExceptionHandler]
+    end
+
+    RequestValidation -->|3. Passes DTO| Service
+
+    subgraph "Service Layer"
+        Service[Service] -->|4. Uses Mapper| Mapper1[DTO to Entity Conversion]
+        Mapper1 -->|5. Entity| ServiceLogic[Business Logic with One-to-One]
+        ServiceLogic -.->|NotExists, AlreadyExists| ExceptionHandler
+        ServiceLogic -->|6. Entity with Details| Repository
+    end
+
+    subgraph "Repository Layer"
+        Repository[Repository] -->|7. Persist to Database| Database[(Database)]
+        Database -->|8. Return Entity| Repository
+        Repository -.->|DB Errors| ExceptionHandler
+    end
+
+    Repository -->|9. Return Entity| ServiceLogic
+    ServiceLogic -->|10. Processed Entity| Mapper2[Entity to DTO Conversion]
+    Mapper2 -->|11. Return DTO| Service
+
+    Service -->|12. Return DTO| Controller
+    Controller -->|13. Create StandardResponse| Response[HTTP Response with StandardResponse]
+    ExceptionHandler -->|Error StandardResponse| Response
+    Response -->|14. Return Response| Client
+
+    class Client client;
+    class Controller,Response controller;
+    class Service,ServiceLogic service;
+    class Repository repository;
+    class Database database;
+    class Mapper1,Mapper2 mapper;
+    class RequestValidation validator;
+    class ExceptionHandler error;
+
+    classDef error fill:#e00,stroke:#333,stroke-width:2px;

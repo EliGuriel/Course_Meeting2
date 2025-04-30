@@ -1,0 +1,308 @@
+# בדיקות API למערכת ניהול תלמידים - Stage 3
+# עם שימוש בפרמטר שאילתה לפתרון בעיית קידוד עברית
+
+### ======== ניהול מורים ========
+
+### שליפת כל המורים
+GET http://localhost:8080/teachers
+Accept: application/json
+
+### יצירת מורה חדש
+POST http://localhost:8080/teachers
+Content-Type: application/json
+
+{
+  "name": "דוד לוי",
+  "subject": "מתמטיקה"
+}
+
+### יצירת מורה נוסף
+POST http://localhost:8080/teachers
+Content-Type: application/json
+
+{
+  "name": "רונית כהן",
+  "subject": "אנגלית"
+}
+
+### יצירת מורה נוסף עם אותו מקצוע
+POST http://localhost:8080/teachers
+Content-Type: application/json
+
+{
+  "name": "יעקב ישראלי",
+  "subject": "מתמטיקה"
+}
+
+### שליפת מורה לפי מזהה (יש להחליף את המזהה)
+GET http://localhost:8080/teachers/1
+Accept: application/json
+
+### שליפת מורים לפי מקצוע בעברית - שימוש בפרמטר שאילתה 'name'
+GET http://localhost:8080/teachers/subject?name=מתמטיקה
+Accept: application/json
+
+### שליפת מורים לפי מקצוע באנגלית - גם עם פרמטר שאילתה
+GET http://localhost:8080/teachers/subject?name=Mathematics
+Accept: application/json
+
+### עדכון מורה
+PUT http://localhost:8080/teachers/1
+Content-Type: application/json
+
+{
+  "name": "דוד לוי - מעודכן",
+  "subject": "מתמטיקה מתקדמת"
+}
+
+### ======== ניהול תלמידים ========
+
+### שליפת כל התלמידים
+GET http://localhost:8080/students
+Accept: application/json
+
+### יצירת תלמיד חדש ללא פרטים וללא מורה
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 20,
+  "email": "israel@example.com"
+}
+
+### יצירת תלמיד חדש עם פרטים אך ללא מורה
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "שרה",
+  "lastName": "כהן",
+  "age": 22,
+  "email": "sara@example.com",
+  "details": {
+    "address": "רחוב הרצל 1, תל אביב",
+    "phoneNumber": "0541234567",
+    "emergencyContactName": "משה כהן",
+    "emergencyContactPhone": "0501234567"
+  }
+}
+
+### שליפת תלמיד לפי מזהה
+GET http://localhost:8080/students/1
+Accept: application/json
+
+### עדכון תלמיד
+PUT http://localhost:8080/students/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "firstName": "ישראל",
+  "lastName": "ישראלי מעודכן",
+  "age": 21,
+  "email": "israel.updated@example.com"
+}
+
+### שליפת תלמידים ללא מורה
+GET http://localhost:8080/students/without-teacher
+Accept: application/json
+
+### ======== קישור תלמידים ומורים ========
+
+### שיוך תלמיד למורה (מנקודת מבט התלמיד)
+POST http://localhost:8080/students/1/teacher/1
+Accept: application/json
+
+### שליפת המורה של תלמיד מסוים
+GET http://localhost:8080/students/1/teacher
+Accept: application/json
+
+### שיוך תלמיד למורה (מנקודת מבט המורה)
+POST http://localhost:8080/teachers/2/students/2
+Accept: application/json
+
+### הסרת מורה מתלמיד
+DELETE http://localhost:8080/students/1/teacher
+
+### הסרת תלמיד ממורה
+DELETE http://localhost:8080/teachers/2/students/2
+
+### שיוך כל התלמידים למורים
+POST http://localhost:8080/students/1/teacher/1
+Accept: application/json
+
+###
+POST http://localhost:8080/students/2/teacher/2
+Accept: application/json
+
+### ======== ניהול פרטי תלמיד ========
+
+### יצירת פרטי תלמיד עבור תלמיד קיים (אם אין עדיין)
+POST http://localhost:8080/students/1/details
+Content-Type: application/json
+
+{
+  "address": "רחוב אלנבי 5, תל אביב",
+  "phoneNumber": "0541111111",
+  "emergencyContactName": "יעקב ישראלי",
+  "emergencyContactPhone": "0542222222"
+}
+
+### שליפת פרטי תלמיד
+GET http://localhost:8080/students/1/details
+Accept: application/json
+
+### עדכון פרטי תלמיד
+PUT http://localhost:8080/students/1/details
+Content-Type: application/json
+
+{
+  "address": "רחוב אלנבי 15, תל אביב",
+  "phoneNumber": "0543333333",
+  "emergencyContactName": "יעקב ישראלי",
+  "emergencyContactPhone": "0544444444"
+}
+
+### שגיאת ולידציה - מספר טלפון לא תקין
+PUT http://localhost:8080/students/1/details
+Content-Type: application/json
+
+{
+  "address": "רחוב אלנבי 15, תל אביב",
+  "phoneNumber": "123456",
+  "emergencyContactName": "יעקב ישראלי",
+  "emergencyContactPhone": "0544444444"
+}
+
+### שגיאת ולידציה - מספר טלפון חירום לא תקין
+PUT http://localhost:8080/students/1/details
+Content-Type: application/json
+
+{
+  "address": "רחוב אלנבי 15, תל אביב",
+  "phoneNumber": "0541111111",
+  "emergencyContactName": "יעקב ישראלי",
+  "emergencyContactPhone": "123456"
+}
+
+### מחיקת פרטי תלמיד
+DELETE http://localhost:8080/students/1/details
+
+### ======== בדיקת שגיאות ומקרי קצה ========
+
+### ניסיון ליצור תלמיד עם אימייל קיים
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "כפיל",
+  "lastName": "אימייל",
+  "age": 25,
+  "email": "israel@example.com"
+}
+
+### ניסיון לשייך תלמיד למורה שלא קיים
+POST http://localhost:8080/students/1/teacher/999
+Accept: application/json
+
+### ניסיון לשייך מורה לתלמיד שלא קיים
+POST http://localhost:8080/teachers/1/students/999
+Accept: application/json
+
+### ניסיון לעדכן פרטי תלמיד עם אי התאמה בין Path ל-Body
+PUT http://localhost:8080/students/1/details
+Content-Type: application/json
+
+{
+  "studentId": 2,
+  "address": "רחוב אלנבי 15, תל אביב",
+  "phoneNumber": "0541111111",
+  "emergencyContactName": "יעקב ישראלי",
+  "emergencyContactPhone": "0544444444"
+}
+
+### ======== סיפור משתמש מלא ========
+
+### 1. יצירת מורה חדש
+POST http://localhost:8080/teachers
+Content-Type: application/json
+
+{
+  "name": "אסתר מלמד",
+  "subject": "היסטוריה"
+}
+
+### 2. יצירת תלמיד חדש
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "יוסי",
+  "lastName": "לומד",
+  "age": 18,
+  "email": "yossi@example.com"
+}
+
+### 3. שיוך התלמיד למורה
+# יש להחליף את המזהים לפי הערכים שהתקבלו בתגובות הקודמות
+POST http://localhost:8080/teachers/4/students/3
+Accept: application/json
+
+### 4. הוספת פרטי תלמיד
+POST http://localhost:8080/students/3/details
+Content-Type: application/json
+
+{
+  "address": "רחוב הרצל 25, תל אביב",
+  "phoneNumber": "0545555555",
+  "emergencyContactName": "מרים לומד",
+  "emergencyContactPhone": "0546666666"
+}
+
+### 5. שליפת התלמיד עם כל הקשרים
+GET http://localhost:8080/students/3
+Accept: application/json
+
+### 6. עדכון פרטי התלמיד
+PUT http://localhost:8080/students/3/details
+Content-Type: application/json
+
+{
+  "address": "רחוב הרצל 30, ירושלים",
+  "phoneNumber": "0547777777",
+  "emergencyContactName": "מרים לומד",
+  "emergencyContactPhone": "0546666666"
+}
+
+### 7. עדכון המורה
+PUT http://localhost:8080/teachers/4
+Content-Type: application/json
+
+{
+  "name": "אסתר מלמד מצטיינת",
+  "subject": "היסטוריה עולמית"
+}
+
+### 8. חיפוש מורים לפי מקצוע בעברית
+GET http://localhost:8080/teachers/subject?name=היסטוריה
+Accept: application/json
+
+### 9. שליפת המורה עם התלמידים המשויכים
+GET http://localhost:8080/teachers/4
+Accept: application/json
+
+### 10. מחיקת התלמיד (כולל פרטיו)
+DELETE http://localhost:8080/students/3
+
+### 11. בדיקה שהתלמיד אכן נמחק
+GET http://localhost:8080/students/3
+Accept: application/json
+
+### 12. מחיקת המורה
+DELETE http://localhost:8080/teachers/4
+
+### 13. בדיקה שהמורה אכן נמחק
+GET http://localhost:8080/teachers/4
+Accept: application/json

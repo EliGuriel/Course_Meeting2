@@ -1,0 +1,216 @@
+# בדיקות API למערכת ניהול תלמידים - Stage 2
+# כולל אובייקטים מקוננים (StudentDetailsDto) עם @Valid
+
+### שליפת כל התלמידים
+GET http://localhost:8080/students
+Accept: application/json
+
+### שליפת תלמיד לפי מזהה
+GET http://localhost:8080/students/1
+Accept: application/json
+
+### שליפת תלמיד שלא קיים (נצפה לקבל שגיאת NotExists)
+GET http://localhost:8080/students/999
+Accept: application/json
+
+### הוספת תלמיד חדש עם פרטים - תקין
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 20,
+  "email": "israel222@example.com",
+  "details": {
+    "address": "רחוב הרצל 1, תל אביב",
+    "phoneNumber": "0541234567",
+    "emergencyContactName": "שרה ישראלי",
+    "emergencyContactPhone": "0501234567"
+  }
+}
+
+### הוספת תלמיד חדש ללא פרטים - תקין
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "שרה",
+  "lastName": "כהן",
+  "age": 22,
+  "email": "sara@example.com"
+}
+
+### הוספת תלמיד - שגיאת ולידציה בפרטי תלמיד (אימייל לא תקין)
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "משה",
+  "lastName": "לוי",
+  "age": 25,
+  "email": "not-an-email",
+  "details": {
+    "address": "רחוב הרצל 2, תל אביב",
+    "phoneNumber": "0541234567",
+    "emergencyContactName": "דינה לוי",
+    "emergencyContactPhone": "0501234567"
+  }
+}
+
+### הוספת תלמיד - שגיאת ולידציה בפרטים נוספים (מספר טלפון לא תקין)
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "דוד",
+  "lastName": "כהן",
+  "age": 19,
+  "email": "david@example.com",
+  "details": {
+    "address": "רחוב הרצל 3, תל אביב",
+    "phoneNumber": "123456",
+    "emergencyContactName": "רחל כהן",
+    "emergencyContactPhone": "0501234567"
+  }
+}
+
+### הוספת תלמיד - שגיאת ולידציה בפרטים נוספים (מספר טלפון חירום לא תקין)
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "יעקב",
+  "lastName": "לוי",
+  "age": 21,
+  "email": "yaakov@example.com",
+  "details": {
+    "address": "רחוב הרצל 4, תל אביב",
+    "phoneNumber": "0541234567",
+    "emergencyContactName": "רבקה לוי",
+    "emergencyContactPhone": "123456"
+  }
+}
+
+### עדכון תלמיד קיים כולל פרטים
+PUT http://localhost:8080/students/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "firstName": "ישראל",
+  "lastName": "ישראלי מעודכן",
+  "age": 21,
+  "email": "israel.updated@example.com",
+  "details": {
+    "id": 1,
+    "address": "רחוב הרצל 10, תל אביב",
+    "phoneNumber": "0541234567",
+    "emergencyContactName": "שרה ישראלי מעודכן",
+    "emergencyContactPhone": "0501234567"
+  }
+}
+
+### שליפת פרטי תלמיד לפי מזהה
+GET http://localhost:8080/students/1/details
+Accept: application/json
+
+### שליפת פרטי תלמיד שלא קיים (נצפה לקבל שגיאת NotExists)
+GET http://localhost:8080/students/999/details
+Accept: application/json
+
+### עדכון פרטי תלמיד
+PUT http://localhost:8080/students/1/details
+Content-Type: application/json
+
+{
+  "address": "רחוב דיזנגוף 100, תל אביב",
+  "phoneNumber": "0521234567",
+  "emergencyContactName": "שרה ישראלי",
+  "emergencyContactPhone": "0521234568"
+}
+
+### עדכון פרטי תלמיד - שגיאת ולידציה (מספר טלפון לא תקין)
+PUT http://localhost:8080/students/1/details
+Content-Type: application/json
+
+{
+  "address": "רחוב דיזנגוף 100, תל אביב",
+  "phoneNumber": "123456",
+  "emergencyContactName": "שרה ישראלי",
+  "emergencyContactPhone": "0521234568"
+}
+
+### מחיקת פרטי תלמיד
+DELETE http://localhost:8080/students/2/details
+
+### מחיקת תלמיד
+DELETE http://localhost:8080/students/2
+
+### מחיקת תלמיד שלא קיים (נצפה לקבל שגיאת NotExists)
+DELETE http://localhost:8080/students/999
+
+### בדיקת תרחיש מלא מקוננת
+
+### 1. הוספת תלמיד עם פרטים
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "רונית",
+  "lastName": "אברהם",
+  "age": 20,
+  "email": "ronit2@example.com",
+  "details": {
+    "address": "רחוב אלנבי 10, תל אביב",
+    "phoneNumber": "0501111111",
+    "emergencyContactName": "יוסי אברהם",
+    "emergencyContactPhone": "0502222222"
+  }
+}
+
+### 2. שליפת התלמיד שנוצר
+# יש להחליף את ה-ID בערך המתאים
+GET http://localhost:8080/students/3
+Accept: application/json
+
+### 3. שליפת פרטי התלמיד
+GET http://localhost:8080/students/3/details
+Accept: application/json
+
+### 4. עדכון פרטי התלמיד בלבד
+PUT http://localhost:8080/students/3/details
+Content-Type: application/json
+
+{
+  "address": "רחוב אלנבי 20, תל אביב",
+  "phoneNumber": "0503333333",
+  "emergencyContactName": "יוסי אברהם",
+  "emergencyContactPhone": "0504444444"
+}
+
+### 5. עדכון התלמיד עם פרטים מעודכנים
+PUT http://localhost:8080/students/3
+Content-Type: application/json
+
+{
+  "id": 3,
+  "firstName": "רונית",
+  "lastName": "אברהם מעודכן",
+  "age": 21,
+  "email": "ronit.updated@example.com",
+  "details": {
+    "id": 3,
+    "address": "רחוב אלנבי 30, תל אביב",
+    "phoneNumber": "0505555555",
+    "emergencyContactName": "יוסי אברהם מעודכן",
+    "emergencyContactPhone": "0506666666"
+  }
+}
+
+### 6. מחיקת התלמיד (כולל המחיקה האוטומטית של הפרטים)
+DELETE http://localhost:8080/students/3
+
+### 7. וידוא שהתלמיד לא קיים יותר (נצפה לקבל שגיאת NotExists)
+GET http://localhost:8080/students/3
+Accept: application/json

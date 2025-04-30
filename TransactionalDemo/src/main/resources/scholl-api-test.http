@@ -1,0 +1,58 @@
+### Create teacher and student (success case)
+POST http://localhost:8080/api/school/create
+Content-Type: application/json
+
+{
+  "teacherName": "John Smith",
+  "subject": "Mathematics",
+  "studentName": "Jane Doe",
+  "studentEmail": "jane.doe@example.com"
+}
+
+### Create teacher with invalid subject (will cause rollback)
+POST http://localhost:8080/api/school/create
+Content-Type: application/json
+
+{
+  "teacherName": "Error Teacher",
+  "subject": "Invalid",
+  "studentName": "Error Student",
+  "studentEmail": "error@example.com"
+}
+
+### Update teacher and student (success case)
+PUT http://localhost:8080/api/school/update
+Content-Type: application/json
+
+{
+  "teacherId": 1,
+  "studentId": 1,
+  "newTeacherName": "John Updated",
+  "newStudentName": "Jane Updated"
+}
+
+### Update teacher and student (failure case - will rollback)
+PUT http://localhost:8080/api/school/update
+Content-Type: application/json
+
+{
+  "teacherId": 1,
+  "studentId": 1,
+  "newTeacherName": "This name contains error word",
+  "newStudentName": "Jane Updated Again"
+}
+
+### Test endpoint specifically designed to trigger rollback
+POST http://localhost:8080/api/school/test-rollback
+Content-Type: application/json
+
+### Create Hebrew data for demonstration
+POST http://localhost:8080/api/school/create
+Content-Type: application/json
+
+{
+  "teacherName": "אבי כהן",
+  "subject": "מתמטיקה",
+  "studentName": "דנה לוי",
+  "studentEmail": "dana.levy@example.com"
+}

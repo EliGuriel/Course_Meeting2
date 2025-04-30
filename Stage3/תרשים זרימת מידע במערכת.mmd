@@ -1,0 +1,44 @@
+graph TD
+    Client[HTTP Client] -->|1. Sends HTTP Request| Controller
+
+    subgraph "Controller Layer"
+        Controller[Controller] -->|2. Request Validation| RequestValidation[Valid Annotation]
+        RequestValidation -.->|Validation Error| ExceptionHandler[GlobalExceptionHandler]
+    end
+
+    RequestValidation -->|3. Passes DTO| Service
+
+    subgraph "Service Layer"
+        Service[Service] -->|4. Uses Mapper| Mapper1[DTO to Entity Conversion]
+        Mapper1 -->|5. Entity| ServiceLogic[Business Logic]
+        ServiceLogic -->|6. Updates One-to-Many Relationships| RelationshipManager[One-to-Many Relationship Management]
+        ServiceLogic -.->|NotExists, AlreadyExists| ExceptionHandler
+        RelationshipManager -.->|StudentIdAndIdMismatch| ExceptionHandler
+        RelationshipManager -->|7. Related Entities| Repository
+    end
+
+    subgraph "Repository Layer"
+        Repository[Repository] -->|8. Persist to Database| Database[(Database)]
+        Database -->|9. Return Entities| Repository
+        Repository -.->|DB Errors| ExceptionHandler
+    end
+
+    Repository -->|10. Return Entities| ServiceLogic
+    ServiceLogic -->|11. Processed Entities| Mapper2[Entity to DTO Conversion]
+    Mapper2 -->|12. Return DTOs| Service
+
+    Service -->|13. Return DTOs| Controller
+    Controller -->|14. Create StandardResponse| Response[HTTP Response with StandardResponse]
+    ExceptionHandler -->|Error StandardResponse| Response
+    Response -->|15. Return Response| Client
+
+    class Client client;
+    class Controller,Response controller;
+    class Service,ServiceLogic,RelationshipManager service;
+    class Repository repository;
+    class Database database;
+    class Mapper1,Mapper2 mapper;
+    class RequestValidation validator;
+    class ExceptionHandler error;
+
+    classDef error fill:#e00,stroke:#333,stroke-width:2px;

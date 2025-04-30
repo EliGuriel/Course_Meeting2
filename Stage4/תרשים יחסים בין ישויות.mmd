@@ -1,0 +1,29 @@
+classDiagram
+    Student "1" -- "1" StudentDetails : יש
+    Student "N" -- "M" Teacher : מלמד
+
+    class Student {
++Long id
++String firstName [שם פרטי]
++String lastName [שם משפחה]
++double age [גיל]
++String email [דוא"ל]
+        +Set~Teacher~ teachers [מורים]
+        +StudentDetails details [פרטים נוספים]
+    }
+
+    class StudentDetails {
+        +Long id
+        +String address [כתובת]
+        +String phoneNumber [טלפון]
+        +String emergencyContactName [איש קשר לחירום]
+        +String emergencyContactPhone [טלפון לחירום]
+        +Student student [תלמיד]
+    }
+
+    class Teacher {
+        +Long id
+        +String name [שם מלא]
+        +String subject [מקצוע]
+        +Set~Student~ students [תלמידים]
+    }

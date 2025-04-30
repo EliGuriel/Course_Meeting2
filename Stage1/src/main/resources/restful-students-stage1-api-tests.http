@@ -1,0 +1,198 @@
+# בדיקות API למערכת ניהול תלמידים - Stage 1
+# עבור StudentController החדש עם REST endpoints נכונים וכולל StandardResponse
+
+### שליפת כל התלמידים
+GET http://localhost:8080/students
+Accept: application/json
+
+### שליפת תלמיד לפי מזהה
+GET http://localhost:8080/students/1
+Accept: application/json
+
+### שליפת תלמיד שלא קיים (נצפה לקבל שגיאת NotExists)
+GET http://localhost:8080/students/999
+Accept: application/json
+
+### הוספת תלמיד חדש - תקין
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 20,
+  "email": "israel@example.com"
+}
+
+### הוספת תלמיד נוסף - תקין
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "שרה",
+  "lastName": "כהן",
+  "age": 22,
+  "email": "sara@example.com"
+}
+
+### הוספת תלמיד עם אימייל קיים (נצפה לקבל שגיאת AlreadyExists)
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "יוסי",
+  "lastName": "לוי",
+  "age": 25,
+  "email": "israel@example.com"
+}
+
+### הוספת תלמיד - שגיאת ולידציה (שם ראשון ריק)
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "",
+  "lastName": "ישראלי",
+  "age": 20,
+  "email": "invalid@example.com"
+}
+
+### הוספת תלמיד - שגיאת ולידציה (שם ראשון קצר מדי)
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "י",
+  "lastName": "ישראלי",
+  "age": 20,
+  "email": "invalid2@example.com"
+}
+
+### הוספת תלמיד - שגיאת ולידציה (גיל שלילי)
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": -5,
+  "email": "invalid3@example.com"
+}
+
+### הוספת תלמיד - שגיאת ולידציה (אימייל לא תקין)
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 20,
+  "email": "not-an-email"
+}
+
+### עדכון תלמיד קיים
+PUT http://localhost:8080/students/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "firstName": "ישראל",
+  "lastName": "ישראלי מעודכן",
+  "age": 21,
+  "email": "israel.updated@example.com"
+}
+
+### עדכון תלמיד - אי התאמה בין ID בנתיב ל-ID בגוף הבקשה
+PUT http://localhost:8080/students/1
+Content-Type: application/json
+
+{
+  "id": 2,
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 20,
+  "email": "mismatch@example.com"
+}
+
+### עדכון תלמיד שלא קיים
+PUT http://localhost:8080/students/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "firstName": "לא",
+  "lastName": "קיים",
+  "age": 25,
+  "email": "notexists@example.com"
+}
+
+### עדכון תלמיד - שגיאת ולידציה (שם ריק)
+PUT http://localhost:8080/students/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "firstName": "",
+  "lastName": "ישראלי",
+  "age": 20,
+  "email": "israel@example.com"
+}
+
+### עדכון תלמיד - ניסיון לשימוש באימייל שכבר קיים
+PUT http://localhost:8080/students/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 20,
+  "email": "sara@example.com"
+}
+
+### מחיקת תלמיד
+DELETE http://localhost:8080/students/2
+
+### מחיקת תלמיד שלא קיים (נצפה לקבל שגיאת NotExists)
+DELETE http://localhost:8080/students/999
+
+### בדיקת תרחיש מלא: הוספה, שליפה, עדכון ומחיקה
+# 1. הוספת תלמיד חדש
+POST http://localhost:8080/students
+Content-Type: application/json
+
+{
+  "firstName": "יעקב",
+  "lastName": "לוי",
+  "age": 19,
+  "email": "yaakov@example.com"
+}
+
+### 2. שליפת התלמיד שהתווסף
+# שים לב שיש להחליף את ה-ID
+GET http://localhost:8080/students/3
+Accept: application/json
+
+### 3. עדכון התלמיד
+PUT http://localhost:8080/students/3
+Content-Type: application/json
+
+{
+  "id": 3,
+  "firstName": "יעקב",
+  "lastName": "לוי מעודכן",
+  "age": 20,
+  "email": "yaakov.updated@example.com"
+}
+
+### 4. מחיקת התלמיד
+DELETE http://localhost:8080/students/3
+
+### 5. וידוא שהתלמיד לא קיים אחרי המחיקה
+GET http://localhost:8080/students/3
+Accept: application/json
+
+### בדיקת מקרה המציג את GlobalResponseHandler
+# שליפת כל התלמידים - התשובה תיעטף ב-StandardResponse
+GET http://localhost:8080/students?wrapped=true
+Accept: application/json

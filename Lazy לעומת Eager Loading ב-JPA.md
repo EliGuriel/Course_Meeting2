@@ -47,9 +47,8 @@ public class Teacher {
 
 ### חסרונות
 
-1. **בעיית N+1 שאילתות** - עלול לגרום לריבוי שאילתות נוספות בעת גישה לאוספים
-2. **LazyInitializationException** - שגיאה נפוצה כאשר מנסים לגשת לאובייקט לאחר סגירת ה-Session
-3. **אתגרי תצורה** - דורש תשומת לב מיוחדת בתצורת האפליקציה ובתכנון השאילתות
+1. **LazyInitializationException** - שגיאה נפוצה כאשר מנסים לגשת לאובייקט לאחר סגירת ה-Session
+2. **אתגרי תצורה** - דורש תשומת לב מיוחדת בתצורת האפליקציה ובתכנון השאילתות
 
 ## Eager Loading (טעינה להוטה)
 
@@ -104,69 +103,7 @@ JPA מגדיר ברירות מחדל למדיניות הטעינה בהתאם ל
 | OneToMany@  | LAZY | אוספים יכולים להיות גדולים ולא תמיד דרושים |
 | ManyToMany@ | LAZY | אוספים עשויים להיות גדולים ולעיתים קרובות אינם הכרחיים מיידית |
 
-## פתרון בעיית N+1 Queries
 
-אחת הבעיות הנפוצות בLazy Loading היא בעיית N+1 שאילתות, המתרחשת כאשר טוענים רשימה של אובייקטים ואז מבצעים לולאה על הרשימה כדי לגשת לאובייקטים המקושרים:
-
-</div>
-
-<div dir="ltr">
-
-```java
-// first one query to load all teachers
-List<Teacher> teachers = teacherRepository.findAll();
-
-// after that, for each teacher, we load the courses separately (N additional queries)
-for (Teacher teacher : teachers) {
-    System.out.println("Teacher: " + teacher.getName());
-    // here we load the courses for each teacher
-    System.out.println("Courses: " + teacher.getCourses().size());
-}
-```
-
-<div dir="rtl">
-
-### פתרונות
-
-1. **Join Fetch** - שימוש בJPQL או CriteriaAPI:
-
-</div>
-
-<div dir="ltr">
-
-```java
-@Query("SELECT t FROM Teacher t LEFT JOIN FETCH t.courses")
-List<Teacher> findAllWithCourses();
-```
-
-<div dir="rtl">
-
-2. **EntityGraph** - הגדרת גרף ישויות:
-
-</div>
-
-<div dir="ltr">
-
-```java
-@EntityGraph(attributePaths = {"courses"})
-List<Teacher> findAll();
-```
-
-<div dir="rtl">
-
-3. **Batch Size** - הגדרת גודל אצווה:
-
-</div>
-
-<div dir="ltr">
-
-```java
-@OneToMany(mappedBy = "teacher")
-@BatchSize(size = 10) // load courses in batches of 10
-private List<Course> courses;
-```
-
-<div dir="rtl">
 
 ## דוגמה משולבת: שימוש מאוזן
 

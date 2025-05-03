@@ -1,4 +1,4 @@
-package org.example.nplusone.copntroller;
+package org.example.nplusone.controller;
 
 import org.example.nplusone.dto.TeacherDto;
 import org.example.nplusone.service.TeacherService;

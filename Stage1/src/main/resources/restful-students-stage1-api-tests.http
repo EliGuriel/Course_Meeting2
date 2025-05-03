@@ -32,7 +32,7 @@ Content-Type: application/json
   "firstName": "שרה",
   "lastName": "כהן",
   "age": 22,
-  "email": "sara@example.com"
+  "email": "sara1@example.com"
 }
 
 ### הוספת תלמיד עם אימייל קיים (נצפה לקבל שגיאת AlreadyExists)

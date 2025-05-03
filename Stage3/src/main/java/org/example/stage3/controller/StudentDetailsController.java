@@ -25,18 +25,19 @@ public class StudentDetailsController {
 
     /**
      * Get student details
-     * Returns a StandardResponse directly to maintain consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      */
     @GetMapping
-    public StandardResponse getStudentDetails(@PathVariable Long studentId) {
+    public ResponseEntity<StandardResponse> getStudentDetails(@PathVariable Long studentId) {
         StudentDetailsDto detailsDto = studentDetailsService.getStudentDetailsDtoByStudentId(studentId);
-        return new StandardResponse("success", detailsDto, null);
+        StandardResponse response = new StandardResponse("success", detailsDto, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Create new student details
      * Uses @Valid to validate student details according to Jakarta Validation constraints
-     * Returns a ResponseEntity with StandardResponse and 201 Created status
+     * Returns ResponseEntity with StandardResponse and 201 Created status with location header
      */
     @PostMapping
     public ResponseEntity<StandardResponse> createStudentDetails(
@@ -66,14 +67,14 @@ public class StudentDetailsController {
     /**
      * Update student details
      * Uses @Valid to validate student details according to Jakarta Validation constraints
-     * Returns a StandardResponse directly to maintain consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK statuses
      */
     @PutMapping
-    public StandardResponse updateStudentDetails(
+    public ResponseEntity<StandardResponse> updateStudentDetails(
             @PathVariable Long studentId,
             @Valid @RequestBody StudentDetailsDto detailsDto) {
 
-        // Save the original studentId from request body (if any)
+        // Save the original studentId from the request body (if any)
         Long originalStudentId = detailsDto.getStudentId();
         
         // Set the studentId from the path parameter
@@ -83,17 +84,17 @@ public class StudentDetailsController {
         StudentDetailsDto updatedDto = studentDetailsService.validateAndUpdateStudentDetails(
                 studentId, originalStudentId, detailsDto);
         
-        return new StandardResponse("success", updatedDto, null);
+        StandardResponse response = new StandardResponse("success", updatedDto, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Delete student details
-     * Returns 204 No Content without a response body, bypassing GlobalResponseHandler
+     * Returns 204 No Content status without a response body
      */
     @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)  // Explicitly set the response status to 204
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteStudentDetails(@PathVariable Long studentId) {
         studentDetailsService.deleteStudentDetails(studentId);
-        // Returning void with @ResponseStatus(NO_CONTENT) properly creates a 204 response
     }
 }

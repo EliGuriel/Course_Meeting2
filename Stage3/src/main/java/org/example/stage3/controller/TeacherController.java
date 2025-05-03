@@ -26,43 +26,46 @@ public class TeacherController {
 
     /**
      * Get all teachers
-     * Returns a StandardResponse directly to maintain a consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      */
     @GetMapping
-    public StandardResponse getAllTeachers() {
+    public ResponseEntity<StandardResponse> getAllTeachers() {
         List<TeacherDto> teachers = teacherService.getAllTeachers();
-        return new StandardResponse("success", teachers, null);
+        StandardResponse response = new StandardResponse("success", teachers, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Get teacher by ID
-     * Returns a StandardResponse directly to maintain consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      */
     @GetMapping("/{id}")
-    public StandardResponse getTeacherById(@PathVariable Long id) {
+    public ResponseEntity<StandardResponse> getTeacherById(@PathVariable Long id) {
         TeacherDto teacher = teacherService.getTeacherById(id);
-        return new StandardResponse("success", teacher, null);
+        StandardResponse response = new StandardResponse("success", teacher, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Get teachers by subject using query parameter.
-     * This method replaces the path variable approach to handle Hebrew characters properly.
+     * This method uses query parameter to handle Hebrew characters properly.
      *
      * Example: /teachers/subject?name=מתמטיקה
      *
      * @param name The subject name as a query parameter
-     * @return StandardResponse with a list of teachers
+     * @return ResponseEntity with StandardResponse and 200 OK status
      */
     @GetMapping("/subject")
-    public StandardResponse getTeachersBySubject(@RequestParam String name) {
+    public ResponseEntity<StandardResponse> getTeachersBySubject(@RequestParam String name) {
         List<TeacherDto> teachers = teacherService.getTeachersBySubject(name);
-        return new StandardResponse("success", teachers, null);
+        StandardResponse response = new StandardResponse("success", teachers, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Create a new teacher
      * Uses @Valid to validate teacher according to Jakarta Validation constraints
-     * Returns a ResponseEntity with StandardResponse and 201 Created status
+     * Returns ResponseEntity with StandardResponse and 201 Created status with location header
      */
     @PostMapping
     public ResponseEntity<StandardResponse> createTeacher(@Valid @RequestBody TeacherDto teacherDto) {
@@ -81,47 +84,48 @@ public class TeacherController {
     /**
      * Update a teacher
      * Uses @Valid to validate the teacher according to Jakarta Validation constraints
-     * Returns a StandardResponse directly to maintain a consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      */
     @PutMapping("/{id}")
-    public StandardResponse updateTeacher(@PathVariable Long id, @Valid @RequestBody TeacherDto teacherDto) {
+    public ResponseEntity<StandardResponse> updateTeacher(@PathVariable Long id, @Valid @RequestBody TeacherDto teacherDto) {
         TeacherDto updatedTeacher = teacherService.updateTeacher(id, teacherDto);
-        return new StandardResponse("success", updatedTeacher, null);
+        StandardResponse response = new StandardResponse("success", updatedTeacher, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Delete a teacher
-     * Returns 204 No Content without a response body, bypassing GlobalResponseHandler
+     * Returns 204 No Content status without a response body
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)  // Explicitly set the response status to 204
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTeacher(@PathVariable Long id) {
         teacherService.deleteTeacher(id);
-        // Returning void with @ResponseStatus(NO_CONTENT) properly creates a 204 response
     }
 
     /**
      * Assign student to teacher
-     * Returns a StandardResponse directly to maintain a consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK status
+     * Note: This operation modifies an existing resource, so 200 OK is returned instead of 201 Created
      */
     @PostMapping("/{teacherId}/students/{studentId}")
-    public StandardResponse assignStudentToTeacher(
+    public ResponseEntity<StandardResponse> assignStudentToTeacher(
             @PathVariable Long teacherId,
             @PathVariable Long studentId) {
         TeacherDto updatedTeacher = teacherService.assignStudentToTeacher(teacherId, studentId);
-        return new StandardResponse("success", updatedTeacher, null);
+        StandardResponse response = new StandardResponse("success", updatedTeacher, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Remove student from teacher
-     * Returns 204 No Content without a response body, bypassing GlobalResponseHandler
+     * Returns 204 No Content status without a response body
      */
     @DeleteMapping("/{teacherId}/students/{studentId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)  // Explicitly set the response status to 204
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeStudentFromTeacher(
             @PathVariable Long teacherId,
             @PathVariable Long studentId) {
         teacherService.removeStudentFromTeacher(teacherId, studentId);
-        // Returning void with @ResponseStatus(NO_CONTENT) properly creates a 204 response
     }
 }

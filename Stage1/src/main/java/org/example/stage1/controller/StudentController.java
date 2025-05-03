@@ -29,34 +29,35 @@ public class StudentController {
 
     /**
      * Get all students
-     * Returns a StandardResponse directly to maintain a consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      */
     @GetMapping()
-    public StandardResponse getAllStudents() {
+    public ResponseEntity<StandardResponse> getAllStudents() {
         List<StudentDto> students = studentService.getAllStudents();
-        return new StandardResponse("success", students, null);
+        StandardResponse response = new StandardResponse("success", students, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Get a student by ID
-     * Returns a StandardResponse directly to maintain a consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      */
     @GetMapping("/{id}")
-    public StandardResponse getStudent(@PathVariable Long id) {
+    public ResponseEntity<StandardResponse> getStudent(@PathVariable Long id) {
         StudentDto student = studentService.getStudentById(id);
-        return new StandardResponse("success", student, null);
+        StandardResponse response = new StandardResponse("success", student, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Add a new student
      * Uses @Valid to validate a student according to Jakarta Validation constraints
-     * Returns a ResponseEntity with StandardResponse and 201 Created status
+     * Returns ResponseEntity with StandardResponse and 201 Created status with location header
      */
     @PostMapping()
     public ResponseEntity<StandardResponse> addStudent(@Valid @RequestBody StudentDto studentDto) {
         StudentDto added = studentService.addStudent(studentDto);
 
-        // it is customary to return the URI of the created resource in the Location header
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -70,26 +71,25 @@ public class StudentController {
     /**
      * Update a student
      * Uses @Valid to validate a student according to Jakarta Validation constraints
-     * Returns a StandardResponse directly to maintain a consistent API response format
-     *
-     * **** why the ID in the path and body, also?
-     * It is customary to use ID in the URL to identify the resource being updated.
-     * Even if the ID is also in the body
+     * Returns ResponseEntity with StandardResponse and 200 OK status
+     * 
+     * Note: The path variable ID identifies the resource to update, even though
+     * the ID may also be present in the request body
      */
     @PutMapping("/{id}")
-    public StandardResponse updateStudent(@Valid @RequestBody StudentDto studentDto, @PathVariable Long id) {
+    public ResponseEntity<StandardResponse> updateStudent(@Valid @RequestBody StudentDto studentDto, @PathVariable Long id) {
         StudentDto updated = studentService.updateStudent(studentDto, id);
-        return new StandardResponse("success", updated, null);
+        StandardResponse response = new StandardResponse("success", updated, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Delete a student
-     * Returns 204 No Content without a response body, bypassing GlobalResponseHandler
+     * Returns 204 No Content status without a response body
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)  // Explicitly set the response status to 204
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
-        // Returning void with @ResponseStatus(NO_CONTENT) properly creates a 204 response
     }
 }

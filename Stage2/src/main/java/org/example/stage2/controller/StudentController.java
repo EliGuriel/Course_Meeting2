@@ -26,28 +26,30 @@ public class StudentController {
 
     /**
      * Get all students
-     * Returns a StandardResponse directly to maintain consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      */
     @GetMapping()
-    public StandardResponse getAllStudents() {
+    public ResponseEntity<StandardResponse> getAllStudents() {
         List<StudentDto> studentDtos = studentService.getAllStudentsAsDto();
-        return new StandardResponse("success", studentDtos, null);
+        StandardResponse response = new StandardResponse("success", studentDtos, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Get student by ID
-     * Returns a StandardResponse directly to maintain consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      */
     @GetMapping("/{id}")
-    public StandardResponse getStudentById(@PathVariable Long id) {
+    public ResponseEntity<StandardResponse> getStudentById(@PathVariable Long id) {
         StudentDto studentDto = studentService.getStudentDtoById(id);
-        return new StandardResponse("success", studentDto, null);
+        StandardResponse response = new StandardResponse("success", studentDto, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Add a new student
      * Uses @Valid to validate student according to Jakarta Validation constraints
-     * Returns a ResponseEntity with StandardResponse and 201 Created status
+     * Returns ResponseEntity with StandardResponse and 201 Created status with location header
      */
     @PostMapping()
     public ResponseEntity<StandardResponse> addStudent(@Valid @RequestBody StudentDto studentDto) {
@@ -66,22 +68,22 @@ public class StudentController {
     /**
      * Update a student
      * Uses @Valid to validate student according to Jakarta Validation constraints
-     * Returns a StandardResponse directly to maintain consistent API response format
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      */
     @PutMapping("/{id}")
-    public StandardResponse updateStudent(@Valid @RequestBody StudentDto studentDto, @PathVariable Long id) {
+    public ResponseEntity<StandardResponse> updateStudent(@Valid @RequestBody StudentDto studentDto, @PathVariable Long id) {
         StudentDto updatedDto = studentService.updateStudentAndReturnDto(studentDto, id);
-        return new StandardResponse("success", updatedDto, null);
+        StandardResponse response = new StandardResponse("success", updatedDto, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Delete a student
-     * Returns 204 No Content without a response body, bypassing GlobalResponseHandler
+     * Returns 204 No Content status without a response body
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)  // Explicitly set the response status to 204
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
-        // Returning void with @ResponseStatus(NO_CONTENT) properly creates a 204 response
     }
 }

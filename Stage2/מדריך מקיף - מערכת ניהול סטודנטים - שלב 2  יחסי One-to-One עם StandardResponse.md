@@ -430,59 +430,7 @@ public class StudentDetailsController {
 
 <div dir="rtl">
 
-### רכיבי התמיכה בתגובה אחידה
 
-#### 1. GlobalResponseHandler
-
-מטפל בכל התגובות היוצאות מהבקרים:
-
-</div>
-
-<div dir="ltr">
-
-```java
-@ControllerAdvice
-public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
-    
-    @Override
-    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        // Process all responses from controller methods
-        return true;
-    }
-    
-    @Override
-    public Object beforeBodyWrite(Object body, 
-                                 MethodParameter returnType, 
-                                 MediaType selectedContentType,
-                                 Class<? extends HttpMessageConverter<?>> selectedConverterType, 
-                                 ServerHttpRequest request, 
-                                 ServerHttpResponse response) {
-        
-        // Check for a special header that might be set for 204 responses
-        if (response.getHeaders().getFirst("X-Response-Status") != null && 
-            response.getHeaders().getFirst("X-Response-Status").equals("204")) {
-            return body; // Don't modify 204 responses
-        }
-        
-        // If the response is already a StandardResponse, return it unchanged
-        if (body instanceof StandardResponse) {
-            return body;
-        }
-        
-        // Special handling for null (from 204 No Content responses)
-        if (body == null) {
-            return null; // Allow null to pass through for 204 No Content responses
-        }
-        
-        // Default case: wrap the response body in a success StandardResponse
-        return new StandardResponse("success", body, null);
-    }
-}
-```
-
-</div>
-
-<div dir="rtl">
 
 #### 2. GlobalExceptionHandler עם מנגנון StandardResponse
 
@@ -796,7 +744,6 @@ sequenceDiagram
     participant Service as StudentService
     participant Repo as StudentRepository
     participant DB as Database
-    participant ResHandler as GlobalResponseHandler
     participant ExHandler as GlobalExceptionHandler
     
     rect rgb(2, 63, 0)

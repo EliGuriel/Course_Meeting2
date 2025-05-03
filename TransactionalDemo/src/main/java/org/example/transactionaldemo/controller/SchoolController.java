@@ -8,6 +8,7 @@ import org.example.transactionaldemo.entity.Teacher;
 import org.example.transactionaldemo.response.StandardResponse;
 import org.example.transactionaldemo.service.ISchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
@@ -30,6 +31,7 @@ public class SchoolController {
 
     /**
      * Creates a teacher and student as a transactional operation.
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      *
      * Endpoint: POST /api/school/create
      * Example request:
@@ -48,10 +50,10 @@ public class SchoolController {
      *    GlobalExceptionHandler returns an error response
      *
      * @param request DTO containing teacher and student information
-     * @return StandardResponse with a success message
+     * @return ResponseEntity with StandardResponse containing success message
      */
     @PostMapping("/create")
-    public StandardResponse createTeacherAndStudent(@Valid @RequestBody CreateRequest request) {
+    public ResponseEntity<StandardResponse> createTeacherAndStudent(@Valid @RequestBody CreateRequest request) {
         logger.info("Received create request: " + request);
 
         // Create entities from the request
@@ -63,11 +65,13 @@ public class SchoolController {
         schoolService.createTeacherAndStudent(teacher, student);
 
         logger.info("Successfully created teacher and student");
-        return new StandardResponse("success", "Teacher and student created successfully", null);
+        StandardResponse response = new StandardResponse("success", "Teacher and student created successfully", null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Updates a teacher and student as a transactional operation.
+     * Returns ResponseEntity with StandardResponse and 200 OK status
      *
      * Endpoint: PUT /api/school/update
      * Example request:
@@ -84,10 +88,10 @@ public class SchoolController {
      *   and the transaction will be rolled back
      *
      * @param request DTO containing update information
-     * @return StandardResponse with a success message
+     * @return ResponseEntity with StandardResponse containing success message
      */
     @PutMapping("/update")
-    public StandardResponse updateTeacherAndStudent(@Valid @RequestBody UpdateRequest request) {
+    public ResponseEntity<StandardResponse> updateTeacherAndStudent(@Valid @RequestBody UpdateRequest request) {
         logger.info("Received update request: " + request);
 
         // Call the service method - this will be processed in a transaction
@@ -98,19 +102,21 @@ public class SchoolController {
                 request.getNewStudentName());
 
         logger.info("Successfully updated teacher and student");
-        return new StandardResponse("success", "Teacher and student updated successfully", null);
+        StandardResponse response = new StandardResponse("success", "Teacher and student updated successfully", null);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * Test endpoint to demonstrate transaction rollback.
      * Creates a teacher with an invalid subject to trigger rollback.
+     * Returns ResponseEntity with StandardResponse and 200 OK status (never actually returns)
      *
      * Endpoint: POST /api/school/test-rollback
      *
      * @return This endpoint will never return normally as it always throws an exception
      */
     @PostMapping("/test-rollback")
-    public StandardResponse testTransactionRollback() {
+    public ResponseEntity<StandardResponse> testTransactionRollback() {
         logger.info("Testing transaction rollback with invalid subject");
 
         Teacher teacher = new Teacher(null, "Test Teacher", "Invalid");
@@ -120,6 +126,7 @@ public class SchoolController {
         schoolService.createTeacherAndStudent(teacher, student);
 
         // This code will never be reached
-        return new StandardResponse("success", "This will never be returned", null);
+        StandardResponse response = new StandardResponse("success", "This will never be returned", null);
+        return ResponseEntity.ok(response);
     }
 }

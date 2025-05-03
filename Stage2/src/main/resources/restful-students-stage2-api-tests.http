@@ -1,5 +1,5 @@
 # בדיקות API למערכת ניהול תלמידים - Stage 2
-# כולל אובייקטים מקוננים (StudentDetailsDto) עם @Valid
+# כולל אובייקטים מקוננים (StudentDetailsDto) עם Valid
 
 ### שליפת כל התלמידים
 GET http://localhost:8080/students
@@ -21,7 +21,7 @@ Content-Type: application/json
   "firstName": "ישראל",
   "lastName": "ישראלי",
   "age": 20,
-  "email": "israel222@example.com",
+  "email": "israel22@example.com",
   "details": {
     "address": "רחוב הרצל 1, תל אביב",
     "phoneNumber": "0541234567",

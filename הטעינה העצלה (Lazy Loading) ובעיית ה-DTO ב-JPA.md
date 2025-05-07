@@ -12,7 +12,7 @@
 ## שרטוט יחסי גומלין בין הטבלאות
 
 
-![img.png](img.png)
+![img.png](JPA_Relationship_Teacher_Student_Course.png)
 
 
 

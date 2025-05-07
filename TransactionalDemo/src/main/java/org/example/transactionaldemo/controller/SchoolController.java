@@ -88,7 +88,7 @@ public class SchoolController {
      *   and the transaction will be rolled back
      *
      * @param request DTO containing update information
-     * @return ResponseEntity with StandardResponse containing success message
+     * @return ResponseEntity with StandardResponse containing a success message
      */
     @PutMapping("/update")
     public ResponseEntity<StandardResponse> updateTeacherAndStudent(@Valid @RequestBody UpdateRequest request) {
@@ -109,7 +109,7 @@ public class SchoolController {
     /**
      * Test endpoint to demonstrate transaction rollback.
      * Creates a teacher with an invalid subject to trigger rollback.
-     * Returns ResponseEntity with StandardResponse and 200 OK status (never actually returns)
+     * Returns ResponseEntity with StandardResponse and 200 OK statuses (never actually returns)
      *
      * Endpoint: POST /api/school/test-rollback
      *
@@ -122,7 +122,7 @@ public class SchoolController {
         Teacher teacher = new Teacher(null, "Test Teacher", "Invalid");
         Student student = new Student(null, "Test Student", "test@example.com");
 
-        // This will throw RollingBackException because the subject is "Invalid"
+        // This will throw RollingBackException because the subject is "Invalid."
         schoolService.createTeacherAndStudent(teacher, student);
 
         // This code will never be reached

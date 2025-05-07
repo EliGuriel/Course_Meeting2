@@ -31,13 +31,13 @@ public class SchoolServiceImpl implements ISchoolService {
     private final TeacherRepository teacherRepository;
     
     // Application context for getting proxied instances when needed
-    @Autowired
-    private ApplicationContext context;
+    private final ApplicationContext context;
 
     @Autowired
-    public SchoolServiceImpl(StudentRepository studentRepository, TeacherRepository teacherRepository) {
+    public SchoolServiceImpl(StudentRepository studentRepository, TeacherRepository teacherRepository, ApplicationContext context) {
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
+        this.context = context;
     }
 
     /**
@@ -165,7 +165,7 @@ public class SchoolServiceImpl implements ISchoolService {
         Teacher teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher with id " + teacherId + " not found"));
         
-        // Check if teacher has students before deleting
+        // Check if a teacher has students before deleting
         List<Student> students = studentRepository.findByTeacherId(teacherId);
         if (!students.isEmpty()) {
             logger.warning("Cannot delete teacher with students assigned");
@@ -207,7 +207,7 @@ public class SchoolServiceImpl implements ISchoolService {
                 successCount++;
             } catch (Exception e) {
                 logger.warning("Error processing student ID " + id + ": " + e.getMessage());
-                // Continue with next student
+                // Continue with the next student
             }
         }
         
@@ -237,7 +237,7 @@ public class SchoolServiceImpl implements ISchoolService {
      * This demonstrates the proper way to ensure transaction support for internal calls.
      */
     public void demoTransactionalMethodCall(Teacher teacher, Student student) {
-        // Get proxied instance through the application context
+        // Get a proxied instance through the application context
         ISchoolService proxy = context.getBean(ISchoolService.class);
         proxy.createTeacherAndStudent(teacher, student);
     }

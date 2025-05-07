@@ -1,0 +1,97 @@
+flowchart TB
+%% Enhanced with clear starting point and bidirectional relationship handling
+
+%% START MARK and CLIENT with distinctive styling
+    Start(["🚀 START HERE"]) -.->|Begin Process| Client
+    Client[/"🧑‍💻 HTTP CLIENT"/]
+
+%% Bold, thick arrow from client to controller to emphasize the starting flow
+    Client ===>|"1️⃣ INITIAL HTTP REQUEST"| ControllerLayer
+
+%% Layer definitions with better spacing and organization
+    subgraph ControllerLayer["🎮 Controller Layer"]
+        direction LR
+        Controller["👨‍✈️ Controller"] -->|2. Request Validation| RequestValidation{"🔍 Valid\nAnnotation"}
+    end
+
+    subgraph ServiceLayer["⚙️ Service Layer"]
+        direction LR
+        Service["🔧 Service"] --> Mapper1["📥 DTO to\nEntity"]
+        Mapper1 --> ServiceLogic["🧠 Business Logic"]
+        ServiceLogic --> RelationshipManager["🔄 Bidirectional\nRelationship Management"]
+    end
+
+    subgraph RepositoryLayer["💾 Repository Layer"]
+        direction LR
+        Repository["📁 Repository"] <--> |8/9. CRUD Ops| Database[("🗄️ Database")]
+    end
+
+%% Central exception handler with prominent styling
+    ExceptionHandler["⚠️ GlobalExceptionHandler"] -->|Error StandardResponse| Response
+
+%% Main flow connections between layers with thicker lines
+    RequestValidation ==>|3. Passes DTO| Service
+    RequestValidation -.->|"❌ Validation\nError"| ExceptionHandler
+    RelationshipManager ==>|"7. Related Entities\n(Many-to-Many)"| Repository
+    ServiceLogic -.->|"❌ NotExists,\nAlreadyExists"| ExceptionHandler
+    RelationshipManager -.->|"❌ StudentIdAndIdMismatch"| ExceptionHandler
+    Repository -.->|"❌ DB Errors"| ExceptionHandler
+
+%% Return path with different styling
+    Repository ==>|10. Return Entities| ServiceLogic
+    ServiceLogic ==>|11. Processed Entities| Mapper2["📤 Entity\nto DTO"]
+    Mapper2 ==>|12. Return DTOs| Service
+    Service ==>|13. Return DTOs| Controller
+
+%% Final response path
+    Controller ==>|14. Create StandardResponse| Response[("📨 HTTP Response\nwith StandardResponse")]
+    Response ===>|"1️⃣5️⃣ FINAL RESPONSE"| Client
+
+%% Relationship update flow
+    ServiceLogic ==>|"6. Updates Many-to-Many\nRelationships"| RelationshipManager
+
+%% Legend to clarify flow
+subgraph Legend["🔍 FLOW LEGEND"]
+direction LR
+Start1(["Start"]) --- Client1[/"Client"/]
+Client1 ===|"Main Request Flow"| Step1[" "]
+Step1 -->|"Secondary Flow"| Step2[" "]
+Step2 -.->|"Error Flow"| End1[" "]
+end
+
+%% Improved styling
+classDef default fill:#333,stroke:#666,stroke-width:1px,color:#fff,font-weight:bold
+classDef client fill:#1e3799,stroke:#0c2461,stroke-width:3px,color:#ecf0f1,font-weight:bold,font-size:14px
+classDef controller fill:#27ae60,stroke:#2ecc71,stroke-width:1px,color:#fff,font-weight:bold
+classDef service fill:#2980b9,stroke:#3498db,stroke-width:1px,color:#fff,font-weight:bold
+classDef repository fill:#8e44ad,stroke:#9b59b6,stroke-width:1px,color:#fff,font-weight:bold
+classDef database fill:#16a085,stroke:#1abc9c,stroke-width:1px,color:#fff,font-weight:bold
+classDef error fill:#c0392b,stroke:#e74c3c,stroke-width:2px,color:#fff,font-weight:bold
+classDef mapper fill:#7f8c8d,stroke:#95a5a6,stroke-width:1px,color:#fff,font-weight:bold
+classDef start fill:#f39c12,stroke:#f1c40f,stroke-width:3px,color:#000,font-weight:bold,font-size:14px
+classDef legend fill:#2c3e50,stroke:#34495e,stroke-width:1px,color:#ecf0f1,font-weight:bold
+classDef relationship fill:#3498db,stroke:#2980b9,stroke-width:1px,color:#fff,font-weight:bold
+
+%% Apply styles
+class Client,Response client
+class Controller controller
+class Service,ServiceLogic service
+class Repository repository
+class Database database
+class Mapper1,Mapper2 mapper
+class RequestValidation controller
+class ExceptionHandler error
+class Start,Client1 start
+class Legend,Start1,Step1,Step2,End1 legend
+class RelationshipManager relationship
+
+%% Layer styling
+style ControllerLayer fill:#333333,stroke:#555555,stroke-width:2px,color:#FFFFFF,font-weight:bold
+style ServiceLayer fill:#333333,stroke:#555555,stroke-width:2px,color:#FFFFFF,font-weight:bold
+style RepositoryLayer fill:#333333,stroke:#555555,stroke-width:2px,color:#FFFFFF,font-weight:bold
+
+%% Link styling for emphasis
+linkStyle default stroke-width:1.5px,fill:none,stroke:#999
+linkStyle 0 stroke-width:3px,fill:none,stroke:#f39c12,stroke-dasharray: 5 5
+linkStyle 1 stroke-width:4px,fill:none,stroke:#f39c12
+linkStyle 15 stroke-width:4px,fill:none,stroke:#f39c12

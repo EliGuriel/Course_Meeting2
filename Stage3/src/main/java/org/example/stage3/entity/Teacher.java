@@ -21,9 +21,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 
-@ToString(exclude = "students")
-@EqualsAndHashCode(exclude = "students")
-
 public class Teacher {
 
     /**
@@ -68,6 +65,7 @@ public class Teacher {
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
     @ToString.Exclude
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private List<Student> students = new ArrayList<>();
 
     /**

@@ -94,22 +94,15 @@ private Student student;
 
 **היכן להשתמש**:
 - בכל קשר דו-כיווני, בשני הצדדים (או לפחות באחד מהם)
-- ניתן להשתמש גם ברמת המחלקה עם `ToString(exclude = {"field1", "field2"})@`
 
 לדוגמה:
 
 </div>
 
 ```java
-// ברמת השדה
 @OneToOne(mappedBy = "details")
 @ToString.Exclude
 private Student student;
-
-// או ברמת המחלקה
-@ToString(exclude = {"student"})
-public class StudentDetails { 
-      }
 ```
 
 <div dir="rtl">
@@ -120,7 +113,7 @@ public class StudentDetails {
 
 **היכן להשתמש**:
 - בקשרים דו-כיווניים, בדומה ל-`ToString.Exclude@`
-- ניתן להשתמש גם ברמת המחלקה עם `EqualsAndHashCode(exclude = {"field1", "field2"})@`
+
 
 ## דוגמאות קוד מפורטות
 

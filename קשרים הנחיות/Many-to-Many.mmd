@@ -1,0 +1,31 @@
+classDiagram
+    direction LR
+
+    class Teacher {
+        -Long id
+        -String name
+        -String subject
+        -Set~Student~ students
+    }
+
+    class Student {
+        -Long id
+        -String firstName
+        -String lastName
+        -double age
+        -String email
+        -StudentDetails details
+        -Set~Teacher~ teachers
+    }
+
+    class TeacherStudent {
+        -Long teacherId
+        -Long studentId
+    }
+
+    Teacher "many" -- "many" Student
+    Teacher --> TeacherStudent : "@JoinTable"
+    Student --> TeacherStudent : "(mappedBy)"
+
+    note for Teacher "@ManyToMany\n@JoinTable(\n  name = \teacher_student\,\n  joinColumns = @JoinColumn(name = \teacher_id\),\n  inverseJoinColumns = @JoinColumn(name = \student_id\)\n)\n@ToString.Exclude\nprivate Set<Student> students;\n\nצד הבעלים (Owning Side)"
+note for Student "@ManyToMany(mappedBy = \students\)\n@ToString.Exclude\n@JsonIgnore\nprivate Set<Teacher> teachers;\n\nצד הלא-בעלים (Non-Owning Side)"

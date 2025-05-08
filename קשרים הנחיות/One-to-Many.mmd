@@ -1,0 +1,25 @@
+classDiagram
+    direction RL
+
+    class Teacher {
+        -Long id
+        -String name
+        -String subject
+        -List~Student~ students
+    }
+
+    class Student {
+        -Long id
+        -String firstName
+        -String lastName
+        -double age
+        -String email
+        -StudentDetails details
+        -Teacher teacher
+    }
+
+    Student "many" --o "1" Teacher : "teacher ►"
+    Teacher "1" --o "many" Student : "◄ students (mappedBy=teacher)"
+
+    note for Student "@ManyToOne\n@JoinColumn(name = \teacher_id\)\n@ToString.Exclude\nprivate Teacher teacher;\n\nצד הבעלים (Owning Side)\nמחזיק את המפתח הזר"
+note for Teacher "@OneToMany(mappedBy = \teacher\)\n@ToString.Exclude\n@JsonIgnore\nprivate List<Student> students;\n\nצד הלא-בעלים (Non-Owning Side)"

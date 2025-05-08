@@ -21,8 +21,6 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"details", "teachers"})
-@EqualsAndHashCode(exclude = {"details", "teachers"})
 public class Student {
 
     @Id

@@ -1,5 +1,6 @@
 package org.example.stage4.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -16,9 +17,6 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-@ToString(exclude = "students")
-@EqualsAndHashCode(exclude = "students")
 
 public class Teacher {
     @Id
@@ -43,6 +41,7 @@ public class Teacher {
      * 
      * Using @ToString.Exclude to prevent infinite recursion in toString() method.
      */
+
     @ManyToMany
     @JoinTable(
             name = "teacher_student",
@@ -50,6 +49,8 @@ public class Teacher {
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     @ToString.Exclude
+    @JsonIgnore  // Prevents infinite recursion during JSON serialization
+    @EqualsAndHashCode.Exclude
     private Set<Student> students = new HashSet<>();  // Initialize to avoid null pointer
 
     /**

@@ -13,9 +13,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 
-@ToString(exclude = {"details", "teacher"})
-@EqualsAndHashCode(exclude = {"details", "teacher"})
-
 public class Student {
 
     @Id
@@ -69,5 +66,6 @@ public class Student {
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Teacher teacher;
 }

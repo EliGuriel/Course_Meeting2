@@ -1,5 +1,6 @@
 package org.example.stage4.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -10,6 +11,11 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Entity representing a student in the system.
+ * Has a bidirectional One-to-One relationship with StudentDetails
+ * and a Many-to-Many relationship with Teacher.
+ */
 @Entity
 @Table(name = "students")
 @Data
@@ -42,12 +48,31 @@ public class Student {
     @Column(unique = true, nullable = false, length = 100)
     private String email;
 
-    // TODO fix entities relationship: Added orphanRemoval=true to ensure that when a Student
-    // is disconnected from its StudentDetails, the details are automatically deleted
+    /**
+     * One-to-One relationship with StudentDetails.
+     * This side owns the relationship (has the foreign key).
+     * 
+     * The orphanRemoval=true ensures that when a Student is disconnected from 
+     * its StudentDetails, the details are automatically deleted from the database,
+     * preventing orphaned records.
+     * 
+     * CascadeType.ALL ensures all operations (persist, merge, remove, etc.) 
+     * performed on Student are cascaded to the associated StudentDetails.
+     */
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "details_id")
     private StudentDetails details;
     
+    /**
+     * Many-to-Many relationship with Teacher entities.
+     * This is the inverse side of the relationship as indicated by 'mappedBy'.
+     * 
+     * A student can have multiple teachers, and a teacher can have multiple students.
+     * The relationship is managed by the Teacher entity through a join table.
+     */
     @ManyToMany(mappedBy = "students")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
     private Set<Teacher> teachers = new HashSet<>();
 }

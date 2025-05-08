@@ -1,12 +1,15 @@
 package org.example.stage4.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-// TODO fix entities relationship: Added unique constraint on student_id to ensure
-// that a StudentDetails record can be associated with only one Student
+/**
+ * Entity for storing additional details about a student.
+ * Has a bidirectional One-to-One relationship with Student.
+ */
 @Entity
 @Table(name = "student_details",
        uniqueConstraints = @UniqueConstraint(columnNames = {"student_id"}))
@@ -25,7 +28,10 @@ public class StudentDetails {
     @Column(length = 255)
     private String address;
 
-    // regex: for Israeli phone numbers
+    /**
+     * Pattern for validating Israeli phone numbers.
+     * Accepts formats like +972541234567 or 0541234567.
+     */
     @Pattern(regexp = "^\\+?(972|0)([23459]\\d{7}|5\\d{8})$",
             message = "Phone number must be a valid Israeli phone number (e.g., +972541234567 or 0541234567)")
     @Column(length = 20)
@@ -35,15 +41,25 @@ public class StudentDetails {
     @Column(name = "emergency_contact_name", length = 100)
     private String emergencyContactName;
 
-    // regex: for Israeli phone numbers
+    /**
+     * Pattern for validating Israeli phone numbers for emergency contacts.
+     * Same validation rules as the primary phone number.
+     */
     @Pattern(regexp = "^\\+?(972|0)([23459]\\d{7}|5\\d{8})$",
             message = "Emergency contact phone must be a valid Israeli phone number (e.g., +972541234567 or 0541234567)")
     @Column(name = "emergency_contact_phone", length = 20)
     private String emergencyContactPhone;
 
-    // TODO fix entities relationship: Changed relationship to make it more explicit
-    // that a StudentDetails must be associated with a Student
+    /**
+     * This field establishes the bidirectional relationship between StudentDetails and Student entities.
+     * 
+     * @OneToOne(mappedBy = "details") - Indicates that the relationship is owned by
+     * the "details" field in the Student class
+     * 
+     * Using @JsonIgnore to prevent infinite recursion during JSON serialization (Student → 
+     * StudentDetails → Student → ...) as this is the non-owning side of the relationship.
+     */
     @OneToOne(mappedBy = "details")
-    @JoinColumn(name = "student_id") 
+    @JsonIgnore
     private Student student;
 }

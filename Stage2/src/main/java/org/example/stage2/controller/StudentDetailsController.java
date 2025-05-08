@@ -44,7 +44,7 @@ public class StudentDetailsController {
             @PathVariable Long studentId,
             @Valid @RequestBody StudentDetailsDto detailsDto) {
         
-        // Save the original studentId from request body (if any)
+        // Save the original studentId from the request body (if any)
         Long originalStudentId = detailsDto.getStudentId();
         
         // Set the studentId from the path parameter

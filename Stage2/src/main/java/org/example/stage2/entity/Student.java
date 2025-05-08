@@ -10,6 +10,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+/**
+ * Entity representing a student in the system.
+ * Has a bidirectional One-to-One relationship with StudentDetails.
+ */
 @Entity
 @Table(name = "students")
 @Data
@@ -41,9 +45,23 @@ public class Student {
     @Column(unique = true, nullable = false, length = 100)
     private String email;
 
-    /* TODO fix entities relationship: Added orphanRemoval=true to ensure that when a Student
-     is disconnected from its StudentDetails, the details are automatically deleted from the database,
-     preventing orphaned records
+    /**
+     * This relationship uses both cascade and orphanRemoval mechanisms:
+     *
+     * 1. cascade = CascadeType.ALL:
+     *    - Propagates all persistence operations (save, update, delete, etc.)
+     *      from the Student entity to its associated StudentDetails entity
+     *    - When we persist, update, or remove a Student, the same operation
+     *      automatically applies to its linked StudentDetails
+     *
+     * 2. orphanRemoval = true:
+     *    - Handles the specific case when a Student is disconnected from its StudentDetails
+     *      (e.g., when calling student.setDetails(null))
+     *    - Ensures the orphaned StudentDetails entity is automatically deleted from the database
+     *    - Prevents orphaned records that would otherwise remain in the database
+     *
+     * Using both mechanisms provides comprehensive lifecycle management of the dependent
+     * StudentDetails entity in all scenarios.
      */
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "details_id")

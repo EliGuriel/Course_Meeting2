@@ -55,7 +55,7 @@ public class StudentDetailsServiceImpl implements StudentDetailsService {
         // matches the path studentId to prevent accidental relationship changes
         validateStudentIdMatch(pathStudentId, originalStudentId);
         
-        // Continue with normal creation process
+        // Continue with a normal creation process
         StudentDetails created = createStudentDetails(detailsDto);
         StudentDetailsDto createdDto = studentMapper.toDto(created);
         // Ensure the studentId is always set correctly in the response
@@ -145,7 +145,7 @@ public class StudentDetailsServiceImpl implements StudentDetailsService {
         details.setEmergencyContactName(detailsDto.getEmergencyContactName());
         details.setEmergencyContactPhone(detailsDto.getEmergencyContactPhone());
         
-        // Explicitly maintain bidirectional relationship
+        // Explicitly maintain a bidirectional relationship
         details.setStudent(student);
 
         // Saving the student will also save the details due to CascadeType.ALL

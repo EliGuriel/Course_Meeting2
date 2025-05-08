@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class StudentDetailsDto {
     private Long id;
     
-    // TODO fix entities relationship: Added studentId field for validation when directly 
-    // creating or updating StudentDetails
+    // TODO fix entities relationship:
+    //  Added studentId field for validation when directly creating or updating StudentDetails
     private Long studentId;
 
     @Size(max = 255, message = "Address must be less than 255 characters")

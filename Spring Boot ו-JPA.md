@@ -77,6 +77,95 @@
 
 JPA (Java Persistence API) הוא מפרט (specification) סטנדרטי שמגדיר כיצד לעבוד עם ORM (Object-Relational Mapping) בסביבת Java.
 
+# ORM ו-JPA בהקשר של Spring Boot ו-Spring
+
+## מהו ORM?
+
+ORM (Object-Relational Mapping) הוא פרדיגמת תכנות המאפשרת המרה בין מערכות שונות של ייצוג נתונים - בעיקר בין מודלים אובייקטיביים בשפת התכנות (כמו Java) למודל טבלאי של בסיס נתונים יחסי.
+
+מטרתו העיקרית היא לגשר על הפער בין העולם האובייקטיבי של שפות תכנות מונחות עצמים לבין העולם הרלציוני של בסיסי נתונים.
+
+### יתרונות ORM:
+
+1. הפחתת "boilerplate code" - פחות קוד שגרתי לכתיבת שאילתות SQL
+2. הפשטה של פעולות CRUD (יצירה, קריאה, עדכון, מחיקה)
+3. ניהול אוטומטי של קשרים בין אובייקטים
+4. אבסטרקציה מעל בסיס הנתונים הספציפי
+
+## מהו JPA?
+
+JPA (Java Persistence API) הוא מפרט סטנדרטי של Java המגדיר ממשק לניהול נתונים יחסיים ביישומי Java. הוא מהווה סטנדרט לשימוש ב-ORM בסביבת Java.
+
+במילים פשוטות, JPA הוא ה-API הסטנדרטי של Java ל-ORM. הוא מגדיר איך לייצג, לאחסן ולגשת לנתונים במסדי נתונים יחסיים מתוך אפליקציות Java.
+
+## הקשר ל-Spring ו-Spring Boot
+
+Spring מספק תמיכה נרחבת ב-JPA באמצעות מודול Spring Data JPA, שמפשט עוד יותר את העבודה עם נתונים יחסיים:
+
+1. **Spring Data JPA** - מודול זה בנוי מעל JPA ומספק:
+   - ממשקי Repository להפשטת פעולות CRUD נפוצות
+   - יצירה אוטומטית של שאילתות מתוך שמות מתודות
+   - תמיכה בדפדוף ומיון
+   - אינטגרציה עם יתר רכיבי Spring
+
+2. **Spring Boot** מפשט עוד יותר את העבודה עם JPA באמצעות:
+   - Auto-configuration של beans הקשורים ל-JPA
+   - תצורה אוטומטית של מסד נתונים בהתבסס על התלויות בפרויקט
+   - ניהול אוטומטי של טרנזקציות
+   - אינטגרציה קלה עם מגוון מסדי נתונים
+
+## דוגמא פשוטה בסביבת Spring Boot
+
+</div>
+
+```java
+// ישות JPA
+@Entity
+public class Student {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String email;
+    
+    // getters and setters
+}
+
+// ממשק Repository
+public interface StudentRepository extends JpaRepository<Student, Long> {
+    // שאילתות מותאמות אישית
+    List<Student> findByNameContaining(String name);
+    Optional<Student> findByEmail(String email);
+}
+
+// שירות שמשתמש ב-Repository
+@Service
+public class StudentService {
+    private final StudentRepository repository;
+    
+    @Autowired
+    public StudentService(StudentRepository repository) {
+        this.repository = repository;
+    }
+    
+    public List<Student> getAllStudents() {
+        return repository.findAll();
+    }
+    
+    // מתודות נוספות...
+}
+```
+
+<div dir="rtl">
+
+בדוגמה זו:
+- ה-ORM מטפל בהמרה של אובייקטי Student לרשומות בטבלת סטודנטים במסד הנתונים
+- JPA מספק את האנוטציות והממשקים הבסיסיים (כמו @Entity, @Id)
+- Spring Data JPA מספק את הממשק JpaRepository עם מגוון פעולות CRUD מוכנות
+- Spring Boot מגדיר אוטומטית את כל ההגדרות הדרושות לחיבור למסד הנתונים
+
+כל זה מאפשר לפתח במהירות אפליקציות שעובדות עם מסדי נתונים, ללא צורך בכתיבת קוד SQL ידני או התעסקות בפרטי הגישה לבסיס הנתונים.
+
 JPA הוא "חוזה" שמגדיר כיצד יש לבצע מיפוי בין אובייקטים ב-Java לטבלאות בבסיס נתונים רלציוני.
 
 Hibernate הוא המימוש (implementation) הפופולרי ביותר של מפרט ה-JPA. זהו המנוע שמתרגם בפועל את פעולות ה-ORM לפקודות SQL ומבצע את התקשורת עם בסיס הנתונים.

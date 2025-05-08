@@ -254,49 +254,47 @@ docker run --name mysql-stage1 -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=st
 
 ```xml
 <dependencies>
-    <!-- Spring Data JPA - מספק גישה לנתונים באמצעות JPA -->
+    <!-- Spring Data JPA - provides data access via JPA -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
     
-    <!-- Spring Web - תמיכה ב-RESTful ואפליקציות web -->
+    <!-- Spring Web - support for RESTful and web applications -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-
-    <!-- MySQL JDBC Driver - דרייבר לחיבור לבסיס נתונים MySQL -->
+    <!-- MySQL JDBC Driver - driver for connecting to MySQL database -->
     <dependency>
         <groupId>com.mysql</groupId>
         <artifactId>mysql-connector-j</artifactId>
         <scope>runtime</scope>
     </dependency>
     
-    <!-- Lombok - הפחתת boilerplate code -->
+    <!-- Lombok - reducing boilerplate code -->
     <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
         <optional>true</optional>
     </dependency>
     
-    <!-- Spring Boot Test - תשתית ותמיכה בבדיקות -->
+    <!-- Spring Boot Test - framework and support for testing -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-test</artifactId>
         <scope>test</scope>
     </dependency>
     
-    <!-- Bean Validation - ולידציה דקלרטיבית -->
+    <!-- Bean Validation - declarative validation -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 </dependencies>
-
 <build>
     <plugins>
-        <!-- Maven Compiler Plugin - קונפיגורציה עבור Lombok -->
+        <!-- Maven Compiler Plugin - configuration for Lombok -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -310,7 +308,7 @@ docker run --name mysql-stage1 -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=st
             </configuration>
         </plugin>
         
-        <!-- Spring Boot Maven Plugin - בנייה ואריזה של אפליקציית Spring Boot -->
+        <!-- Spring Boot Maven Plugin - building and packaging Spring Boot application -->
         <plugin>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
@@ -336,29 +334,37 @@ docker run --name mysql-stage1 -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=st
 </div>
 
 ```
-org.example.stage1                       # חבילת הבסיס של הפרויקט
-├── controller                           # בקרים - טיפול בבקשות HTTP
-│   └── StudentController                # בקר לניהול סטודנטים
-├── dto                                  # אובייקטי העברת נתונים
-│   └── StudentDto                       # DTO עבור ישות Student
-├── entity                               # ישויות JPA
-│   └── Student                          # ישות Student לייצוג בבסיס הנתונים
-├── exception                            # טיפול בחריגות
-│   ├── AlreadyExists                    # חריגת "כבר קיים"
-│   ├── GlobalExceptionHandler           # טיפול גלובלי בחריגות
-│   ├── NotExists                        # חריגת "לא קיים"
-│   └── StudentIdAndIdMismatch           # חריגת אי-התאמת מזהה
-├── mapper                               # ממפים להמרה בין אובייקטים
-│   └── StudentMapper                    # ממפה להמרה בין Student ל-StudentDto
-├── repository                           # ממשקי גישה לנתונים
-│   └── StudentRepository                # ממשק גישה לנתוני Student
-├── response                             # טיפול בתגובות API
-│   └── StandardResponse                 # מבנה תגובה סטנדרטי
-├── service                              # שכבת השירות - לוגיקה עסקית
-│   ├── StudentService                   # ממשק שירות Student
-│   ├── StudentServiceImpl               # מימוש שירות Student
-│   └── DataInitializer                  # אתחול נתונים ראשוניים
-└── Stage1Application                    # מחלקת הכניסה של האפליקציה
+org.example.stage1                       # Project Root Package
+├── controller                           # Controllers Layer - HTTP Request Handlers
+│   └── StudentController                # Student Management Controller
+│
+├── dto                                  # Data Transfer Objects
+│   └── StudentDto                       # Student Data Transfer Object
+│
+├── entity                               # JPA Entity Layer
+│   └── Student                          # Student Entity (Database Model)
+│
+├── exception                            # Exception Handling
+│   ├── AlreadyExists                    # Entity Already Exists Exception
+│   ├── GlobalExceptionHandler           # Centralized Exception Handler
+│   ├── NotExists                        # Entity Not Found Exception
+│   └── StudentIdAndIdMismatch           # ID Mismatch Exception
+│
+├── mapper                               # Object Mappers
+│   └── StudentMapper                    # Student <-> StudentDto Converter
+│
+├── repository                           # Data Access Layer
+│   └── StudentRepository                # Student Database Operations Interface
+│
+├── response                             # API Response Handling
+│   └── StandardResponse                 # Standardized API Response Structure
+│
+├── service                              # Business Logic Layer
+│   ├── StudentService                   # Student Service Interface
+│   ├── StudentServiceImpl               # Student Service Implementation
+│   └── DataInitializer                  # Initial Data Bootstrapper
+│
+└── Stage1Application                    # Application Entry Point
 ```
 
 <div dir="rtl">

@@ -48,7 +48,7 @@ public class StudentController {
 
     /**
      * Add a new student
-     * Uses @Valid to validate student according to Jakarta Validation constraints
+     * Uses @Valid to validate a student according to Jakarta Validation constraints
      * Returns ResponseEntity with StandardResponse and 201 Created status with location header
      */
     @PostMapping()
@@ -67,7 +67,7 @@ public class StudentController {
 
     /**
      * Update a student
-     * Uses @Valid to validate student according to Jakarta Validation constraints
+     * Uses @Valid to validate a student according to Jakarta Validation constraints
      * Returns ResponseEntity with StandardResponse and 200 OK status
      */
     @PutMapping("/{id}")

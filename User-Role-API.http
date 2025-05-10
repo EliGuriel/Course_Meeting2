@@ -1,0 +1,105 @@
+### Variables
+@baseUrl = http://localhost:8080/api
+
+### -----------------------------------------------------
+### 1. Role Management
+### -----------------------------------------------------
+
+### 1.1 Get all roles
+GET {{baseUrl}}/roles
+
+### 1.2 Create a new role
+POST {{baseUrl}}/roles
+Content-Type: application/json
+
+{
+  "roleName": "MANAGER"
+}
+
+### 1.3 Get role by ID (replace with actual ID)
+GET {{baseUrl}}/roles/1
+
+### 1.4 Update a role
+PUT {{baseUrl}}/roles/3
+Content-Type: application/json
+
+{
+  "roleName": "EDITOR"
+}
+
+### 1.5 Get non-existent role (error test)
+GET {{baseUrl}}/roles/999
+
+### -----------------------------------------------------
+### 2. User Management
+### -----------------------------------------------------
+
+### 2.1 Create a user
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "password": "Secure123!",
+  "roleIds": [1]
+}
+
+### 2.2 Create another user
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "jane_smith",
+  "password": "P@ssw0rd!",
+  "roleIds": [2]
+}
+
+### 2.3 Get all users
+GET {{baseUrl}}/users
+
+### 2.4 Get user by username
+GET {{baseUrl}}/users/john_doe
+
+### 2.5 Update user
+PUT {{baseUrl}}/users/john_doe
+Content-Type: application/json
+
+{
+  "username": "john_doe_updated",
+  "password": "NewSecure456!",
+  "roleIds": [1, 3]
+}
+
+### -----------------------------------------------------
+### 3. User-Role Relationships
+### -----------------------------------------------------
+
+### 3.1 Assign role to user
+POST {{baseUrl}}/users/jane_smith/roles/3
+
+### 3.2 Get all roles for a user
+GET {{baseUrl}}/users/john_doe
+
+### 3.3 Get all users with a specific role
+GET {{baseUrl}}/roles/1/users
+
+### 3.4 Remove a role from a user
+DELETE {{baseUrl}}/users/john_doe/roles/3
+
+### 3.5 Get users without any role
+GET {{baseUrl}}/users/withoutRoles
+
+### -----------------------------------------------------
+### 4. Cleanup
+### -----------------------------------------------------
+
+### 4.1 Delete a user
+DELETE {{baseUrl}}/users/jane_smith
+
+### 4.2 Try to delete a role assigned to users (should fail)
+DELETE {{baseUrl}}/roles/1
+
+### 4.3 Remove role from user, then delete the role
+DELETE {{baseUrl}}/users/john_doe/roles/1
+DELETE {{baseUrl}}/roles/1
+```

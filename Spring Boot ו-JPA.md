@@ -347,6 +347,219 @@ graph TD
     class F db;
 ```
 
+ זהו תרשים היררכי המציג את הקשר בין הטכנולוגיות השונות לגישה למסד נתונים בעולם ה-Java:
+
+## Spring Data JPA - השכבה העליונה
+
+**Spring Data JPA** היא הרמה הגבוהה ביותר - ספריית Spring שמפשטת עוד יותר את העבודה עם JPA:
+
+### 1. Repository Interfaces
+
+</div>
+
+```java
+// במקום לכתוב קוד SQL או JPQL, פשוט מגדירים interface
+public interface UserRepository extends JpaRepository<User, Long> {
+    // Spring Data JPA יוצר את המימוש אוטומטית!
+    Optional<User> findByUsername(String username);
+    List<User> findByActiveTrue();
+}
+```
+
+### 2. Query Methods
+```java
+// Query methods - שמות מתודות שהופכות לשאילתות
+List<User> findByEmailContaining(String email);
+List<User> findByAgeBetween(int min, int max);
+List<User> findTop10ByOrderByCreatedAtDesc();
+
+// או שאילתות מותאמות אישית
+@Query("SELECT u FROM User u WHERE u.roles.size > :count")
+List<User> findUsersWithManyRoles(@Param("count") int count);
+```
+
+### 3. Pagination & Sorting
+```java
+// תמיכה מובנית בעימוד ומיון
+Page<User> findByActive(boolean active, Pageable pageable);
+
+// שימוש:
+PageRequest pageRequest = PageRequest.of(0, 20, Sort.by("username"));
+Page<User> users = userRepository.findByActive(true, pageRequest);
+```
+
+## JPA - Java Persistence API
+
+<div dir="rtl">
+
+**JPA** היא ה-specification (תקן) הרשמי של Java לעבודה עם מסדי נתונים:
+
+### מגדיר מה, לא איך:
+- **Entity Lifecycle** - מחזור חיי אובייקטים
+- **JPQL** - שפת שאילתות מונחית עצמים
+- **Annotations** - כמו @Entity, @Table, @Column
+
+### דוגמאות:
+
+</div>
+
+```java
+// Entity Lifecycle
+@Entity
+public class User {
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+    
+    @PostLoad
+    protected void onLoad() {
+        // נקרא אחרי טעינה מה-DB
+    }
+}
+
+// JPQL - Java Persistence Query Language
+TypedQuery<User> query = entityManager.createQuery(
+    "SELECT u FROM User u WHERE u.email LIKE :pattern", 
+    User.class
+);
+query.setParameter("pattern", "%@gmail.com");
+```
+
+<div dir="rtl">
+
+## Hibernate - המימוש
+
+
+**Hibernate** הוא ה-implementation הפופולרי ביותר של JPA:
+
+</div>
+
+### 1. ORM Implementation
+```java
+// Hibernate ממפה בין טבלאות לאובייקטים
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_role",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
+}
+```
+
+### 2. Caching
+```java
+// First Level Cache - אוטומטי ב-Session
+User user1 = session.get(User.class, 1L); // פונה ל-DB
+User user2 = session.get(User.class, 1L); // מה-cache, לא פונה ל-DB
+
+// Second Level Cache
+@Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class User { }
+```
+
+### 3. Dialect Handling
+```properties
+# Hibernate מתאים את ה-SQL לפי סוג ה-DB
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+# או
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+```
+
+
+<div dir="rtl">
+
+## JDBC - הבסיס
+
+**JDBC** (Java Database Connectivity) - ה-API הבסיסי של Java לתקשורת עם DB:
+
+
+</div>
+
+```java
+// כך נראה קוד JDBC טהור - הרבה boilerplate
+Connection conn = null;
+PreparedStatement stmt = null;
+ResultSet rs = null;
+try {
+    conn = dataSource.getConnection();
+    stmt = conn.prepareStatement("SELECT * FROM users WHERE email = ?");
+    stmt.setString(1, "user@example.com");
+    rs = stmt.executeQuery();
+    while (rs.next()) {
+        User user = new User();
+        user.setId(rs.getLong("id"));
+        user.setUsername(rs.getString("username"));
+        // ... המון קוד ידני
+    }
+} finally {
+    // חובה לסגור את כל המשאבים
+    if (rs != null) rs.close();
+    if (stmt != null) stmt.close();
+    if (conn != null) conn.close();
+}
+```
+
+<div dir="rtl">
+
+## הקשרים בין השכבות
+
+### מה כל שכבה מוסיפה:
+
+1. **JDBC** → קישוריות בסיסית ל-DB
+2. **Hibernate** → ORM אוטומטי, caching, dialect handling
+3. **JPA** → תקן אחיד, annotations, entity lifecycle
+4. **Spring Data JPA** → Repository pattern, query methods, פחות קוד
+
+### בקוד :
+
+</div>
+
+```java
+// Spring Data JPA - הכי פשוט
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
+}
+
+// JPA - יותר שליטה
+@PersistenceContext
+private EntityManager em;
+
+public User findByEmail(String email) {
+    return em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+            .setParameter("email", email)
+            .getSingleResult();
+}
+
+// Hibernate - גישה ישירה
+Session session = em.unwrap(Session.class);
+Criteria criteria = session.createCriteria(User.class);
+criteria.add(Restrictions.eq("email", email));
+
+// JDBC - הכי נמוך
+jdbcTemplate.queryForObject(
+    "SELECT * FROM users WHERE email = ?", 
+    new Object[]{email}, 
+    new UserRowMapper()
+);
+```
+
+<div dir="rtl">
+
+**החוכמה**: Spring Data JPA נותן לך את הפשטות, אבל מאחוריו עדיין יש את כל השכבות האחרות שאפשר לגשת אליהן בעת הצורך!
+
+
 ``` mermaid
 graph TB
     %% Create stack of layers with correct relationships

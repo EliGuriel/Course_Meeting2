@@ -2,51 +2,51 @@ flowchart TB
 %% Enhanced with clear starting point
 
 %% START MARK and CLIENT with distinctive styling
-    Start(["🚀 START HERE"]) -.->|Begin Process| Client
-    Client[/"🧑‍💻 HTTP CLIENT"/]
+    Start([" START HERE"]) -.->|Begin Process| Client
+    Client[/" HTTP CLIENT"/]
 
 %% Bold, thick arrow from client to controller to emphasize the starting flow
     Client ===>|"1️⃣ INITIAL HTTP REQUEST"| ControllerLayer
 
 %% Layer definitions with better spacing and organization
-    subgraph ControllerLayer["🎮 Controller Layer"]
+    subgraph ControllerLayer[" Controller Layer"]
         direction LR
-        Controller["👨‍✈️ Controller"] -->|2. Validate| RequestValidation{"🔍 Validate\nRequest"}
+        Controller["️ Controller"] -->|2. Validate| RequestValidation{" Validate\nRequest"}
     end
 
-    subgraph ServiceLayer["⚙️ Service Layer"]
+    subgraph ServiceLayer[" Service Layer"]
         direction LR
-        Service["🔧 Service"] --> Mapper1["📥 DTO to\nEntity"]
-        Mapper1 --> ServiceLogic["🧠 Business\nLogic"]
-        ServiceLogic --> Mapper2["📤 Entity\nto DTO"]
-        Mapper2 --> ServiceReturn["🔄 Return\nData"]
+        Service[" Service"] --> Mapper1[" DTO to\nEntity"]
+        Mapper1 --> ServiceLogic[" Business\nLogic"]
+        ServiceLogic --> Mapper2[" Entity\nto DTO"]
+        Mapper2 --> ServiceReturn[" Return\nData"]
     end
 
-    subgraph RepositoryLayer["💾 Repository Layer"]
+    subgraph RepositoryLayer[" Repository Layer"]
         direction LR
-        Repository["📁 Repository"] <--> |7/8. CRUD Ops| Database[("🗄️ Database")]
+        Repository[" Repository"] <--> |7/8. CRUD Ops| Database[(" Database")]
     end
 
 %% Central exception handler with prominent styling
-    ExceptionHandler["⚠️ Global Exception Handler"] -->|Error Response| Response
+    ExceptionHandler[" Global Exception Handler"] -->|Error Response| Response
 
 %% Main flow connections between layers with thicker lines
     RequestValidation ==>|3. Valid DTO| Service
-    RequestValidation -.->|"❌ Validation\nError"| ExceptionHandler
+    RequestValidation -.->|" Validation\nError"| ExceptionHandler
     ServiceLogic ==>|6. Entity Object| Repository
-    ServiceLogic -.->|"❌ Business\nExceptions"| ExceptionHandler
-    Repository -.->|"❌ Database\nErrors"| ExceptionHandler
+    ServiceLogic -.->|" Business\nExceptions"| ExceptionHandler
+    Repository -.->|" Database\nErrors"| ExceptionHandler
 
 %% Return path with different styling
     ServiceReturn ==>|12. DTO Response| Controller
     Repository ==>|9-11. Return Entity| ServiceLogic
 
 %% Final response path
-    Controller ==>|13. Format Response| Response[("📨 HTTP\nResponse")]
+    Controller ==>|13. Format Response| Response[(" HTTP\nResponse")]
     Response ===>|"1️⃣4️⃣ FINAL RESPONSE"| Client
 
 %% Legend to clarify flow
-subgraph Legend["🔍 FLOW LEGEND"]
+subgraph Legend[" FLOW LEGEND"]
 direction LR
 Start1(["Start"]) --- Client1[/"Client"/]
 Client1 ===|"Main Request Flow"| Step1[" "]

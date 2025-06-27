@@ -20,6 +20,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+
 public class Student {
 
     @Id
@@ -31,8 +32,8 @@ public class Student {
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
-    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
+//    @NotBlank(message = "Last name is required")
+//    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 

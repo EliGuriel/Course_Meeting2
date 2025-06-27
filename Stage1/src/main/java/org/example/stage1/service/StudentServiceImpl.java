@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /*
@@ -23,9 +24,49 @@ import java.util.stream.Collectors;
  * 2. Performance optimization - Using readOnly=true for query methods helps Hibernate
  *    optimize performance by disabling dirty checking and potentially using read replicas
  *
- * 3. Declarative transaction management - Allows Spring to handle transaction boundaries
- *    automatically, reducing error-prone manual transaction handling
  */
+/** * ================================ TRANSACTION MANAGEMENT EXPLANATION ================================
+ * ================================ DETAILED EXPLANATION ================================
+ *
+ * 1. DATA INTEGRITY IN DETAIL:
+ * ----------------------------
+ * When a method is marked with @Transactional, Spring wraps all database operations
+ * in a single transaction.
+ * This means:
+ * - If ANY operation fails, ALL operations are rolled back
+ * - Prevents partial updates that could leave data in an inconsistent state
+ * - Example: If updating a student fails after creating a teacher, the teacher
+ *   creation is also rolled back
+ *
+ * 2. PERFORMANCE OPTIMIZATION EXPLAINED:
+ * --------------------------------------
+ *
+ * a) DIRTY CHECKING:
+ * - By default, Hibernate tracks all loaded entities for changes
+ * - At transaction end, it compares current state with original state
+ * - With readOnly=true, this checking is DISABLED:
+ *   • Saves memory (no need to store original state snapshot)
+ *   • Saves CPU cycles (no comparison needed)
+ *   • Prevents accidental modifications
+ *
+ * B) READ REPLICAS:
+ * - Master database handles writes, replica databases handle reads
+ * - readOnly=true allows Spring to route queries to read replicas
+ * - Benefits:
+ *   • Distributes load across multiple databases
+ *   • Master DB focuses on writes only
+ *   • Better scalability and performance
+
+ * IMPORTANT NOTES:
+ * ----------------
+ * - @Transactional only works when called from OUTSIDE the class (proxy pattern)
+ * - Default rollback behavior: only on RuntimeException (unchecked)
+ * - Use rollbackFor=Exception.class to rollback on checked exceptions too
+ * - Keep transactions short to avoid locking resources
+ *
+ * =====================================================================================
+ */
+
 @Service
 public class StudentServiceImpl implements StudentService {
 
@@ -45,12 +86,11 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional(readOnly = true)
     public List<StudentDto> getAllStudents() {
+
         return studentRepository.findAll().stream()
                 .map(studentMapper::toDto)
                 .collect(Collectors.toList());
     }
-
-
 
     /**
      * Get student by ID as DTO
@@ -61,6 +101,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional(readOnly = true)
     public StudentDto getStudentById(Long id) {
+        // ORM query to find a student by ID, Hibernate will handle the transaction
+
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new NotExists("Student with id " + id + " does not exist"));
                 

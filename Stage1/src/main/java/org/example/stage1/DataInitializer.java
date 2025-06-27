@@ -18,7 +18,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Check if there are already records in the database
+        // Check if there are already records in the database, if not, initialize with sample data
         if (studentRepository.count() == 0) {
             // Create and save initial data
             studentRepository.save(new Student(null, "John", "Doe", 21.5, "john.doe@example.com"));

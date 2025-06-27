@@ -2,6 +2,65 @@
 
 # מדריך מקיף - תקשורת רשת, HTTP ו-JSON
 
+## תוכן עניינים
+
+### 1. [מבוא - מה באמת נשלח על הקו ברשת?](#מה-באמת-נשלח-על-הקו-ברשת)
+### 2. [זרימת נתונים - דוגמה מעשית](#דוגמה-מהקוד---שליחת-נתונים)
+### 3. [מבנה HTTP Request ברמת Bytes](#מבנה-http-request-מלא-ברמת-הbytes)
+### 4. [HTTP Requests ו-Responses](#מה-באמת-נשלח-על-הקו)
+- 4.1 [דוגמה - יצירת מוצר](#כשהדפדפן-שולח-בקשה-ליצירת-מוצר)
+- 4.2 [תשובת השרת](#כשהשרת-מחזיר-תשובה)
+### 5. [המרה לBytes - דוגמה מפורטת](#דוגמה-מעשית-שליחת-נתוני-מוצר-ברמת-bytes)
+- 5.1 [HTTP Request כBytes](#1-http-request-ב-bytes)
+- 5.2 [פירוק הודעה לBytes](#2-המרה-לbytes-utf-8)
+### 6. [HTTP Response ברמת Bytes](#http-response-ברמת-הbytes)
+### 7. [JSON Serialization](#json-serialization-ברמת-הbytes)
+- 7.1 [מאובייקט Java לJSON](#1-java-object)
+- 7.2 [המרה לטקסט](#2-jackson-serialization-ל-string)
+- 7.3 [המרה לBytes](#3-json-string-כbytes-utf-8)
+### 8. [Character Encoding](#character-encoding-ב-http---איך-הצד-המקבל-יודע-מה-הקידוד)
+- 8.1 [הבעיה המרכזית](#השאלה-המרכזית)
+- 8.2 [פתרון דרך HTTP Headers](#http-headers---המפתח-לפתרון)
+- 8.3 [סוגי Encoding](#סוגי-encoding-עיקריים)
+- 8.4 [UTF-8, UTF-16, ASCII](#utf-8-הנפוץ-ביותר)
+### 9. [Character Encoding דוגמאות](#character-encoding-על-הקו)
+- 9.1 [תווי ASCII ועברית](#utf-8-encoding-דוגמאות)
+- 9.2 [Spring Boot ו-Encoding](#איך-spring-boot-מגדיר-את-הencoding)
+### 10. [בעיות Encoding ופתרונות](#מה-קורה-אם-אין-charset-header)
+- 10.1 [ניחוש הדפדפן](#browser-detection---איך-הדפדפן-מנחש)
+- 10.2 [BOM (Byte Order Mark)](#bom-byte-order-mark)
+- 10.3 [דוגמה - תו עברית](#דוגמה-מעשית---תו-עברית)
+### 11. [זרימת תקשורת מלאה](#זרימת-תקשורת-מלאה---רמת-bytes)
+### 12. [תהליך ההמרות](#תהליך-ההמרות-במערכת)
+- 12.1 [צד הדפדפן (JavaScript)](#בצד-הדפדפן-javascript)
+- 12.2 [צד השרת (Spring Boot)](#בצד-השרת-spring-boot)
+### 13. [Jackson Framework](#jackson---המנוע-שמבצע-את-הקסם)
+### 14. [דוגמה קונקרטית](#דוגמה-קונקרטית-מהקוד)
+### 15. [HTTPS והצפנה](#תקשורת-https---הצפנה-ברמת-bytes)
+### 16. [דוגמה מלאה - יצירת מוצר](#דוגמה-מלאה-יצירת-מוצר-חדש)
+### 17. [פענוח Bytes בדפדפן](#פענוח-bytes-בדפדפן)
+### 18. [Network Layer](#network-layer-פירוט)
+- 18.1 [TCP/IP Stack](#tcpip-stack)
+- 18.2 [HTTP Headers Analysis](#http-headers-analysis)
+### 19. [Debugging ובעיות](#מה-קורה-כשיש-שגיאה-ברמת-bytes)
+- 19.1 [בעיות Encoding](#תרחיש-בעיה-ב-encoding)
+- 19.2 [הגדרות Spring](#איך-להגדיר-encoding-במפורש-ב-spring)
+- 19.3 [Browser Detection](#browser-detection---איך-הדפדפן-מנחש)
+- 19.4 [Debugging Tools](#debugging-encoding-problems)
+### 20. [כלי Debugging](#דוגמאות-network-debugging)
+- 20.1 [Browser DevTools](#בדיקה-עם-browser-devtools)
+- 20.2 [Wireshark/tcpdump](#בדיקה-עם-wiresharktcpdump)
+### 21. [טבלת Encodings](#רשימת-encodings-נפוצים)
+### 22. [למה זה עובד ככה?](#למה-זה-עובד-ככה)
+- 22.1 [יתרונות JSON](#יתרונות-של-json-כטקסט)
+- 22.2 [תהליך ההמרה](#תהליך-ההמרה)
+### 23. [Performance](#performance-והשפעה-על-הרשת)
+### 24. [שגיאות נפוצות](#שגיאות-נפוצות-והבנה-מוטעית)
+### 25. [Best Practices](#best-practices)
+### 26. [סיכום](#סיכום---המסע-המלא)
+
+---
+
 ## מה באמת נשלח על הקו ברשת?
 
 כשאנחנו שולחים נתונים בין דפדפן לשרת, **הכל נשלח כטקסט** (סדרה של bytes שמייצגים תווים). JSON אינו פורמט בינארי - זה פשוט **מחרוזת טקסט מובנית** שנראית כמו אובייקט JavaScript.
@@ -20,25 +79,25 @@ sequenceDiagram
     participant Network as קו תקשורת
     participant Spring as Spring Server
     participant Controller as ProductController
-
+    
     Note over Browser: JavaScript Object
     Browser->>Browser: JSON.stringify()
     Note over Browser: Convert to JSON String
-
+    
     Browser->>Network: HTTP POST Content-Type application/json
     Note over Network: Raw text (bytes)
-
+    
     Network->>Spring: Raw HTTP bytes
     Spring->>Spring: @RequestBody Jackson automatic conversion
     Note over Spring: ProductDto Object in Java
-
+    
     Spring->>Controller: ProductDto object
     Controller->>Controller: Process data
     Controller->>Spring: StandardResponse object
-
+    
     Spring->>Spring: Jackson automatic conversion
     Spring->>Network: HTTP Response Content-Type application/json
-
+    
     Network->>Browser: Raw HTTP bytes
     Browser->>Browser: JSON.parse()
     Note over Browser: JavaScript Object
@@ -57,12 +116,12 @@ graph TD
     A[Browser creates HTTP request] --> B[Convert to UTF-8 bytes]
     B --> C[Add HTTP headers as bytes]
     C --> D[Send byte stream over network]
-
+    
     D --> E[Server receives byte stream]
     E --> F[Parse HTTP headers from bytes]
     F --> G[Decode body using charset]
     G --> H[Process request]
-
+    
     style B fill:#012345
     style D fill:#012345
     style G fill:#012345
@@ -196,12 +255,12 @@ Response header as bytes:
 
 ```java
 StandardResponse response = new StandardResponse(
-        "success",
-        Arrays.asList(
-                new Product(1, "laptop", 2500.50),
-                new Product(2, "mouse", 45.99)
-        ),
-        null
+    "success", 
+    Arrays.asList(
+        new Product(1, "laptop", 2500.50),
+        new Product(2, "mouse", 45.99)
+    ), 
+    null
 );
 ```
 
@@ -261,18 +320,18 @@ graph TD
     A[Spring Boot Server] --> B[HTTP Response]
     B --> C[Headers]
     B --> D[Body - bytes]
-
+    
     C --> E["Content-Type: application/json<br/>charset=UTF-8"]
     C --> F["Content-Length: 156"]
     C --> G["Other headers..."]
-
+    
     D --> H["Actual JSON bytes<br/>[0x7B, 0x22, 0x73, 0x74...]"]
-
+    
     I[Browser] --> J[Read Headers First]
     J --> K[Parse charset=UTF-8]
     K --> L[Decode bytes using UTF-8]
     L --> M[Get JSON string]
-
+    
     style E fill:#012345
     style K fill:#012345
 ```
@@ -294,11 +353,11 @@ graph LR
     A --> D[UTF-16 - 16 bit units]
     A --> E[ISO-8859-1 - Latin-1]
     A --> F[Windows-1252]
-
+    
     C --> G[Most common today]
     D --> H[Used in Java internally]
     E --> I[Legacy European]
-
+    
     style C fill:#012345
     style G fill:#012345
 ```
@@ -375,7 +434,7 @@ public ResponseEntity<StandardResponse> createProduct(@Valid @RequestBody Produc
     Product createdProduct = productService.createProduct(productDto);
     StandardResponse response = new StandardResponse("success", createdProduct, null);
     return ResponseEntity.created(location).body(response);
-
+    
     // Spring adds UTF-8 charset automatically
 }
 ```
@@ -391,20 +450,20 @@ graph TD
     A[HTTP Response] --> B{charset specified?}
     B -->|Yes| C[Use specified charset]
     B -->|No| D[Browser guesses]
-
+    
     D --> E[Check BOM]
     D --> F[Content analysis]
     D --> G[Default charset]
-
+    
     E --> H{BOM found?}
     H -->|Yes| I[Use BOM charset]
     H -->|No| F
-
+    
     F --> J[Analyze byte patterns]
     J --> K[Statistical guessing]
-
+    
     G --> L[Usually UTF-8 or ISO-8859-1]
-
+    
     style C fill:#012345
     style K fill:#012345
     style L fill:#012345
@@ -689,11 +748,11 @@ graph LR
     B --> C[Encrypted bytes on wire]
     C --> D[TLS Decryption]
     D --> E[Original HTTP bytes]
-    
+
     A --> A1["50 4F 53 54 2F 61 70 69..."]
     C --> C1["8F A2 C4 E1 9B 7D F3 5A..."]
     E --> E1["50 4F 53 54 2F 61 70 69..."]
-    
+
     style C fill:#012345
 ```
 
@@ -783,11 +842,11 @@ graph TD
     D --> E[Read Content-Length bytes]
     E --> F[Decode body using charset]
     F --> G[Parse JSON to JavaScript object]
-    
+
     D --> D1["charset=UTF-8"]
     F --> F1[JSON string]
     G --> G1[JavaScript object]
-    
+
     style D1 fill:#012345
     style F1 fill:#012345
     style G1 fill:#012345
@@ -807,13 +866,13 @@ graph TD
     B --> C[Network Layer - IP]
     C --> D[Data Link Layer - Ethernet/WiFi]
     D --> E[Physical Layer - Electrical signals]
-    
+
     A --> A1[HTTP headers + JSON body]
     B --> B1[Add TCP headers, port numbers]
     C --> C1[Add IP headers, routing info]
     D --> D1[Add frame headers, MAC addresses]
     E --> E1[Convert to electrical/radio signals]
-    
+
     style A1 fill:#012345
     style E1 fill:#012345
 ```
@@ -885,8 +944,8 @@ graph TD
 public ResponseEntity<StandardResponse> createProduct(@Valid @RequestBody ProductDto productDto) {
     // Explicitly specify UTF-8 in response
     return ResponseEntity.created(location)
-        .contentType(MediaType.APPLICATION_JSON_UTF8) // Deprecated but explicit
-        .body(response);
+            .contentType(MediaType.APPLICATION_JSON_UTF8) // Deprecated but explicit
+            .body(response);
 }
 
 // Option 3: Global configuration
@@ -913,15 +972,15 @@ graph TD
     B --> C{BOM found?}
     C -->|Yes| D[Use BOM charset]
     C -->|No| E[Analyze byte patterns]
-    
+
     E --> F[Statistical analysis]
     F --> G[High ASCII bytes?]
     G -->|Yes| H[Probably UTF-8]
     G -->|No| I[Probably ASCII/Latin-1]
-    
+
     E --> J[Meta tags in HTML]
     J --> K[<meta charset= UTF-8>]
-    
+
     style D fill:#012345
     style H fill:#012345
     style I fill:#012345
@@ -937,17 +996,17 @@ graph TD
 
 ```java
 // Debug: Print actual bytes being sent
-@PostMapping("/api/products")  
+@PostMapping("/api/products")
 public ResponseEntity<StandardResponse> createProduct(@Valid @RequestBody ProductDto productDto) {
     String productName = productDto.getName();
-    
+
     // Debug: Print bytes
     byte[] utf8Bytes = productName.getBytes(StandardCharsets.UTF_8);
     System.out.println("UTF-8 bytes: " + Arrays.toString(utf8Bytes));
-    
+
     byte[] isoBytes = productName.getBytes(StandardCharsets.ISO_8859_1);
     System.out.println("ISO bytes: " + Arrays.toString(isoBytes));
-    
+
     // Continue with normal processing...
 }
 ```
@@ -963,13 +1022,13 @@ public ResponseEntity<StandardResponse> createProduct(@Valid @RequestBody Produc
 ```javascript
 // In browser console, you can inspect actual bytes:
 fetch('/api/products')
-  .then(response => response.text())
-  .then(text => {
-    console.log('Response text:', text);
-    // Convert to bytes for inspection:
-    const bytes = new TextEncoder().encode(text);
-    console.log('Response bytes:', Array.from(bytes));
-  });
+    .then(response => response.text())
+    .then(text => {
+        console.log('Response text:', text);
+        // Convert to bytes for inspection:
+        const bytes = new TextEncoder().encode(text);
+        console.log('Response bytes:', Array.from(bytes));
+    });
 
 // Example output:
 // Response text: {"status":"success","data":[{"name":"laptop"}]}
@@ -1021,14 +1080,14 @@ fetch('/api/products')
 graph LR
     A[JavaScript Object] -->|JSON.stringify| B[JSON String]
     B -->|HTTP| C[Network Bytes]
-    C -->|HTTP| D[JSON String] 
+    C -->|HTTP| D[JSON String]
     D -->|Jackson Parse| E[Java Object]
-    
+
     E -->|Jackson Serialize| F[JSON String]
     F -->|HTTP| G[Network Bytes]
     G -->|HTTP| H[JSON String]
     H -->|JSON.parse| I[JavaScript Object]
-    
+
     style B fill:#012345
     style D fill:#012345
     style F fill:#012345
